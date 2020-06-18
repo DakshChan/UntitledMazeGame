@@ -110,8 +110,8 @@ public class Gui extends JFrame {
 		}
 	}
 	
+	//This method should take in some variables
 	void startGame() {
-		//CODE for connections game start and other stuff here
 		
 		//TEST FOR GUI
 		boolean[][] walls = new boolean[][]{
