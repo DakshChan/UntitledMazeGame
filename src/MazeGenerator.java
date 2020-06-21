@@ -106,10 +106,10 @@ public class MazeGenerator {
 	}
 
 	public boolean[][] getMaze(){
-		boolean[][] boolMaze = new boolean[WIDTH][HEIGHT];
-		for (int i = 0; i < HEIGHT; i++) {
-			for (int j = 0; j < WIDTH; j++) {
-				boolMaze[i][j] = maze[i][j] != 1.0f;
+		boolean[][] boolMaze = new boolean[WIDTH -2][HEIGHT-2];
+		for (int i = 1; i < HEIGHT - 1; i++) {
+			for (int j = 1; j < WIDTH - 1; j++) {
+				boolMaze[i-1][j-1] = maze[i][j] != 1.0f;
 			}
 		}
 		return boolMaze;

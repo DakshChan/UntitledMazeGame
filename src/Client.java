@@ -156,7 +156,7 @@ public class Client extends JFrame {
 			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
-					if (lighting[x][y] > 0) {
+					if (lighting[x][y] >= 0) {
 						map2d.drawImage(IMGFloor, x * 320, y * 320, null);
 						if (walls[x][y] == true) {
 							left = false;
@@ -270,7 +270,7 @@ public class Client extends JFrame {
 						temp2d.drawImage(IMGNoise,0,0,null);
 						temp2d.dispose();
 						
-						map2d.drawImage(temp, x * 320, y * 320, null);
+						//map2d.drawImage(temp, x * 320, y * 320, null);
 						
 					} else {
 						map2d.setPaint(Color.BLACK);
@@ -294,14 +294,16 @@ public class Client extends JFrame {
 			//Gets rid of the 2d graphics
 			map2d.dispose();
 			
-			//Replace with a properly scaled version based on player Pos
-			//Instead of filling it to screen
+			
 			int small = 0;
 			if (this.getWidth() < this.getHeight()) {
 				small = this.getWidth();
 			} else {
 				small = this.getHeight();
 			}
+			
+			//Replace with a properly scaled version based on player Pos
+			//Instead of filling it to screen
 			
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
