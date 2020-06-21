@@ -11,8 +11,12 @@ import java.io.IOException;
 public class Gui extends JFrame {
 	
 	JPanel currentPanel;
+
+	Client client;
 	
-	Gui() {
+	Gui(Client client) {
+		this.client = client;
+
 		currentPanel = new MainMenuPanel();
 		this.add(currentPanel);
 		
@@ -59,13 +63,17 @@ public class Gui extends JFrame {
 			if (e.getX() >= (320/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
 				if (e.getY() >= (280/540.0) * this.getHeight() && e.getY() <= (340/540.0) * this.getHeight()) {
 					//PLAY
-					System.out.println("play");
+
+					String username = JOptionPane.showInputDialog(this, "Enter Username:");
+					client.sendMsg(Messages.SET_USERNAME + username);
 					
 					startGame();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
 					System.out.println("instruct");
+
+					showInstructions();
 				}
 			}
 		}
@@ -80,7 +88,7 @@ public class Gui extends JFrame {
 		
 		}
 	}
-	
+
 	class GamePanel extends JPanel {
 		private int mapSizeX;
 		private int mapSizeY;
@@ -124,6 +132,7 @@ public class Gui extends JFrame {
 				}
 			}
 		}
+
 		
 		@Override
 		protected void paintComponent(Graphics g) {
@@ -269,6 +278,20 @@ public class Gui extends JFrame {
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
 	}
+
+	class InstructionPanel extends JPanel {
+
+
+		InstructionPanel() {
+			this.requestFocus();
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+			g2.drawString("Hello World", 100, 100);
+		}
+	}
 	
 	//This method should take in some variables
 	void startGame() {
@@ -277,12 +300,21 @@ public class Gui extends JFrame {
 		
 		MazeGenerator g = new MazeGenerator();
 		boolean[][] walls = g.getMaze();
-		g.showMaze();
+		//g.showMaze();
 		
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
 		
+		revalidate();
+		repaint();
+	}
+
+	void showInstructions() {
+		remove(currentPanel);
+		currentPanel = new InstructionPanel();
+		add(currentPanel);
+
 		revalidate();
 		repaint();
 	}
