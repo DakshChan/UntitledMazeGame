@@ -100,6 +100,9 @@ public class Client extends JFrame {
 		int playerY;
 		int playerDir; //0 Up, 1 Right, 2 Down, 3 Left
 		
+		int mapPosOffsetX;
+		int getMapPosOffsetY;
+		
 		private boolean[][] walls;
 		private int[][] lighting;
 		
@@ -129,13 +132,11 @@ public class Client extends JFrame {
 			mapSizeX = this.walls.length;
 			mapSizeY = this.walls[0].length;
 			
-			playerX = playerSpawnX*320;
-			playerY = playerSpawnY*320;
-			
-			
+			playerX = playerSpawnX;
+			playerY = playerSpawnY;
 
 			lighting = new int[mapSizeX][mapSizeY];
-			recursiveUpdateLighting(playerSpawnX, playerSpawnY, 5);
+			updateLighting();
 			
 			this.addKeyListener(this);
 		}
@@ -289,11 +290,10 @@ public class Client extends JFrame {
 			temp2d.drawImage(IMGPlayer,0,0,null);
 			temp2d.dispose();
 			
-			map2d.drawImage(temp, playerX, playerY, null);
+			map2d.drawImage(temp, playerX * 320, playerY * 320, null);
 			
 			//Gets rid of the 2d graphics
 			map2d.dispose();
-			
 			
 			int small = 0;
 			if (this.getWidth() < this.getHeight()) {
@@ -306,6 +306,15 @@ public class Client extends JFrame {
 			//Instead of filling it to screen
 			
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
+		}
+		
+		private void updateLighting() {
+			for (int i = 0; i < mapSizeX; i++) {
+				for (int j = 0; j < mapSizeY; j++) {
+					lighting[i][j] = 0;
+				}
+			}
+			recursiveUpdateLighting(playerX, playerY,5);
 		}
 		
 		private void recursiveUpdateLighting(int x, int y, int lightLevel) {
@@ -370,61 +379,33 @@ public class Client extends JFrame {
 		public void keyReleased(KeyEvent e) {}
 
 		private void movePlayerLeft() {
-			int playerXIndex = (int) Math.floor(playerX/320.0);
-			int playerYIndex = (int) Math.floor(playerY/320.0);
-			if (walls[playerXIndex - 1][playerYIndex] != true) {
-				playerX -= 320;
-				for (int i = 0; i < mapSizeX; i++) {
-					for (int j = 0; j < mapSizeY; j++) {
-						lighting[i][j] = 0;
-					}
-				}
-				recursiveUpdateLighting(playerXIndex-1, playerYIndex,5);
+			if (walls[playerX - 1][playerY] != true) {
+				playerX -= 1;
+				updateLighting();
 			}
 			playerDir = 3;
 		}
 
 		private void movePlayerRight() {
-			int playerXIndex = (int) Math.floor(playerX/320.0);
-			int playerYIndex = (int) Math.floor(playerY/320.0);
-			if (walls[playerXIndex + 1][playerYIndex] != true) {
-				playerX += 320;
-				for (int i = 0; i < mapSizeX; i++) {
-					for (int j = 0; j < mapSizeY; j++) {
-						lighting[i][j] = 0;
-					}
-				}
-				recursiveUpdateLighting(playerXIndex+1, playerYIndex,5);
+			if (walls[playerX + 1][playerY] != true) {
+				playerX += 1;
+				updateLighting();
 			}
 			playerDir = 1;
 		}
 
 		private void movePlayerDown() {
-			int playerXIndex = (int) Math.floor(playerX/320.0);
-			int playerYIndex = (int) Math.floor(playerY/320.0);
-			if (walls[playerXIndex][playerYIndex + 1] != true) {
-				playerY += 320;
-				for (int i = 0; i < mapSizeX; i++) {
-					for (int j = 0; j < mapSizeY; j++) {
-						lighting[i][j] = 0;
-					}
-				}
-				recursiveUpdateLighting(playerXIndex, playerYIndex+1,5);
+			if (walls[playerX][playerY + 1] != true) {
+				playerY += 1;
+				updateLighting();
 			}
 			playerDir = 2;
 		}
 
 		private void movePlayerUp() {
-			int playerXIndex = (int) Math.floor(playerX/320.0);
-			int playerYIndex = (int) Math.floor(playerY/320.0);
-			if (walls[playerXIndex][playerYIndex - 1] != true) {
-				playerY -= 320;
-				for (int i = 0; i < mapSizeX; i++) {
-					for (int j = 0; j < mapSizeY; j++) {
-						lighting[i][j] = 0;
-					}
-				}
-				recursiveUpdateLighting(playerXIndex, playerYIndex-1,5);
+			if (walls[playerX][playerY - 1] != true) {
+				playerY -= 1;
+				updateLighting();
 			}
 			playerDir = 0;
 		}
