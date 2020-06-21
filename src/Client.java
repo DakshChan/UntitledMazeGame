@@ -25,6 +25,7 @@ public class Client extends JFrame {
 		this.setVisible(true);
 		
 		connection = new Connection();
+		connection.go();
 	}
 	
 	class MainMenuPanel extends JPanel implements MouseListener {
@@ -65,8 +66,8 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
+					System.out.println(username);
 					connection.sendMsg(Messages.SET_USERNAME + username);
-
 
 					//startGame();
 					
@@ -295,11 +296,11 @@ public class Client extends JFrame {
 	}
 	
 	//This method should take in some variables
-	void startGame() {
+	void startGame(float[][] maze) {
 		
 		//TEST FOR GUI
 		
-		MazeGenerator g = new MazeGenerator();
+		MazeGenerator g = new MazeGenerator(maze);
 		// TODO: Get Maze from server
 		boolean[][] walls = g.getMaze();
 		//g.showMaze();
@@ -355,13 +356,11 @@ public class Client extends JFrame {
 				try {
 					if (input.ready()) {
 						String msg = input.readLine();
+						System.out.println(msg);
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.START_GAME)) {
-							ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
-							float[][] maze = (float[][])is.readObject();
-							System.out.println(maze[0][0]);
-							
+							startGame(parseMaze(body));
 						}
 						
 					}
@@ -388,5 +387,31 @@ public class Client extends JFrame {
 		}
 		
 	}
-	
+
+	private static float[][] parseMaze(String maze) 	{
+
+		int row = 0;
+		int column = 0;
+
+		float[][] arr = new float[MazeGenerator.HEIGHT][MazeGenerator.WIDTH];
+
+		for (int i = 0; i < maze.length(); i++) {
+			char cell = maze.charAt(i);
+			if (cell == '1') {
+				System.out.println(row);
+				System.out.println(column);
+				arr[row][column] = 1.0f;
+				column++;
+			} else if (cell == '0') {
+				arr[row][column] = 0.0f;
+				column++;
+			} else if (cell == 'l') {
+				row++;
+				column = 0;
+			}
+		}
+
+		return arr;
+	}
+
 }
