@@ -109,6 +109,7 @@ public class Client extends JFrame {
 		private BufferedImage IMGWallStraight;
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
+		private BufferedImage IMGPlayer;
 		
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
@@ -118,6 +119,7 @@ public class Client extends JFrame {
 				IMGWallNub = ImageIO.read(new File("assets/connectorNub.png"));
 				IMGFloor = ImageIO.read(new File("assets/path.png"));
 				IMGNoise = ImageIO.read(new File("assets/noise.png"));
+				IMGPlayer = ImageIO.read(new File("assets/player.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
