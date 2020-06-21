@@ -54,7 +54,7 @@ class Server {
 				e.printStackTrace();
 			}
 
-			output.println("Client "+clientCounter+", you are connected!");   //send a message to the client
+			output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
 			output.flush();                                 //flush the output stream to make sure the message
 			//was sent but not kept in the buffer (very important!)
 			//get a message from the client
@@ -67,12 +67,15 @@ class Server {
 						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == 2) {
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
+							MazeGenerator mazeGenerator = new MazeGenerator();
 							clientCounter = 0;
 							for (int i = 0; i < lobby.playerSockets.length; i++) { // start game
-								System.out.println(i);
-								System.out.println(lobby.playerSockets[i]);
-								lobby.playerSockets[i].output.println(Messages.START_GAME);
+								lobby.playerSockets[i].output.println(Messages.START_GAME + "null");
 								lobby.playerSockets[i].output.flush();
+								ObjectOutputStream os = new ObjectOutputStream(lobby.playerSockets[i].socket.getOutputStream());
+								os.writeObject(mazeGenerator.maze);
+								os.flush();
+								System.out.println("sent maze");
 							}
 						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < 2) {
 							if (clientCounter == 1) { // make a new lobby

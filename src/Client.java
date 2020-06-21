@@ -11,6 +11,8 @@ class Client {
 	PrintWriter output;       //writer for the output stream
 	boolean running = true;   //program status
 
+	boolean enteredGame = false;
+
 	public void go() {
 
 		Gui g = new Gui(this);
@@ -34,11 +36,19 @@ class Client {
 		//wait for response from the server
 		while(running){
 			try {
-				if (input.ready()) {                        //check for an incoming message
-					String msg = input.readLine();          //read the message
-					System.out.println("Message from the server: " + msg);
+				if (input.ready()) {
+					String msg = input.readLine();
+					String header = msg.split("\0")[0];
+					String body = msg.split("\0")[1];
+					if (Messages.compareHeaders(header, Messages.START_GAME)) {
+						ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
+						float[][] maze = (float[][])is.readObject();
+						System.out.println(maze[0][0]);
+
+					}
+
 				}
-			}catch (IOException e) {
+			}catch (Exception e) {
 				System.out.println("Failed to receive message from the server.");
 				e.printStackTrace();
 			}
@@ -52,6 +62,7 @@ class Client {
 		}catch (Exception e) {
 			System.out.println("Failed to close stream or/and socket.");
 		}*/
+
 	}
 
 	public void sendMsg(String msg) {

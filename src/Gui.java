@@ -66,8 +66,9 @@ public class Gui extends JFrame {
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
 					client.sendMsg(Messages.SET_USERNAME + username);
-					
-					startGame();
+
+
+					//startGame();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -299,6 +300,7 @@ public class Gui extends JFrame {
 		//TEST FOR GUI
 		
 		MazeGenerator g = new MazeGenerator();
+		// TODO: Get Maze from server
 		boolean[][] walls = g.getMaze();
 		//g.showMaze();
 		
