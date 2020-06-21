@@ -135,6 +135,7 @@ public class Client extends JFrame {
 			
 
 			lighting = new int[mapSizeX][mapSizeY];
+			recursiveUpdateLighting(playerSpawnX, playerSpawnY, 5);
 			
 			this.addKeyListener(this);
 		}
@@ -309,7 +310,7 @@ public class Client extends JFrame {
 			if (lightLevel == 0) {
 				return;
 			}
-			if (lighting[x][y] != 0) {
+			if (lighting[x][y] > lightLevel) {
 				return;
 			}
 			lighting[x][y] = lightLevel;
@@ -325,8 +326,20 @@ public class Client extends JFrame {
 			if (y > 0) {
 				recursiveUpdateLighting(x, y + 1, lightLevel - 1);
 			}
-			if (y < mapSizeY) {
+			if (y < mapSizeY-1) {
 				recursiveUpdateLighting(x, y - 1, lightLevel - 1);
+			}
+			if (x > 0 && y > 0) {
+				recursiveUpdateLighting(x-1, y-1, lightLevel-2);
+			}
+			if (x < mapSizeX-1 && y > 0) {
+				recursiveUpdateLighting(x+1, y-1, lightLevel-2);
+			}
+			if (x > 0 && y < mapSizeY-1) {
+				recursiveUpdateLighting(x-1, y+1, lightLevel-2);
+			}
+			if (x < mapSizeX-1 && y < mapSizeY-1) {
+				recursiveUpdateLighting(x+1, y+1, lightLevel-2);
 			}
 		}
 		
@@ -467,7 +480,7 @@ public class Client extends JFrame {
 		MazeGenerator g = new MazeGenerator(maze);
 		// TODO: Get Maze from server
 		boolean[][] walls = g.getMaze();
-		//g.showMaze();
+		g.showMaze();
 		
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
