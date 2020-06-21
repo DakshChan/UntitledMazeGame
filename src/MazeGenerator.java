@@ -45,7 +45,6 @@ public class MazeGenerator {
 			}
 		}
 
-		maze[1][2] = 1.0f;
 		maze[HEIGHT - 2][WIDTH - 3] = 1.0f;
 
 		this.showMaze();
