@@ -343,19 +343,39 @@ public class Client extends JFrame {
 
 		@Override
 		protected void paintComponent(Graphics g) {
-			Graphics2D g2 = (Graphics2D) g;
+			int width = this.getWidth();
+			int height = this.getHeight();
 
 			// graphics setup
+			Graphics2D g2 = (Graphics2D) g;
 			RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setRenderingHints(renderingHints);
-			Font font = new Font("Arial", Font.PLAIN, 24);
-			g2.setFont(font);
 
-			// text ew
+			// title
+			Font bigFont = new Font("Arial", Font.BOLD, 36);
+			g2.setFont(bigFont);
+			FontMetrics fontMetrics = g2.getFontMetrics();
 			String instructionTitle = "Instructions";
-			g2.drawString(instructionTitle, 100, 100);
-			String instructionText = "Every player is sent the same maze and must race to the finish.";
-			g2.drawString(instructionText, 100, 100);
+			int titleStartY = (int)(height * 0.2);
+			g2.drawString(instructionTitle, width/2 - fontMetrics.stringWidth(instructionTitle)/2, titleStartY);
+
+			// body
+			Font bodyFont = new Font("Arial", Font.PLAIN, 18);
+			g2.setFont(bodyFont);
+			fontMetrics = g2.getFontMetrics();
+
+			String[] instructionTextLines = {
+					"Every player is sent the same maze and must race to find the exit",
+					"Players are ranked by completion time",
+					"The maze is dark but players will have a flashlight to help them see"
+			};
+
+			int bodyStartX = (int)(width * 0.25f);
+			int bodyStartY = (int)(height * 0.30f);
+
+			for (int i = 0; i < instructionTextLines.length; i++) {
+				g2.drawString(instructionTextLines[i], bodyStartX, bodyStartY + (int)(i * fontMetrics.getHeight() * 1.25));
+			}
 		}
 	}
 	
