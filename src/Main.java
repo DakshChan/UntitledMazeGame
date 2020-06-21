@@ -1,10 +1,10 @@
 public class Main {
 	public static void main(String[] args) {
-
+		
+		Client g = new Client();
+		
 		//MazeGenerator mazeGenerator = new MazeGenerator();
 		//CollisionMap collisionMap = new CollisionMap(mazeGenerator.maze);
-		Client client = new Client();
-		client.go();
 		
 		//Threading here
 	}
