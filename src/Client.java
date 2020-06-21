@@ -113,7 +113,11 @@ public class Client extends JFrame {
 		private BufferedImage IMGNoise;
 		private BufferedImage IMGPlayer;
 		
+		private long lastMoveTime;
+		
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
+			
+			lastMoveTime = System.currentTimeMillis();
 			
 			try{
 				IMGWallConnect = ImageIO.read(new File("assets/connector.png"));
@@ -150,10 +154,10 @@ public class Client extends JFrame {
 			BufferedImage map = new BufferedImage(mapSizeX * 320, mapSizeY * 320, 2);
 			Graphics2D map2d = map.createGraphics();
 			
-			boolean left = false;
-			boolean right = false;
-			boolean up = false;
-			boolean down = false;
+			boolean left;
+			boolean right;
+			boolean up;
+			boolean down;
 			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
@@ -360,15 +364,17 @@ public class Client extends JFrame {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
-
-			if (code == 'w') {
-				movePlayerUp();
-			} else if (code == 's') {
-				movePlayerDown();
-			} else if (code == 'a') {
-				movePlayerLeft();
-			} else if (code == 'd') {
-				movePlayerRight();
+			
+			if (lastMoveTime + 150 < System.currentTimeMillis()) {
+				if (code == 'w') {
+					movePlayerUp();
+				} else if (code == 's') {
+					movePlayerDown();
+				} else if (code == 'a') {
+					movePlayerLeft();
+				} else if (code == 'd') {
+					movePlayerRight();
+				}
 			}
 
 			repaint();
@@ -382,6 +388,7 @@ public class Client extends JFrame {
 			if (walls[playerX - 1][playerY] != true) {
 				playerX -= 1;
 				updateLighting();
+				lastMoveTime = System.currentTimeMillis();
 			}
 			playerDir = 3;
 		}
@@ -390,6 +397,7 @@ public class Client extends JFrame {
 			if (walls[playerX + 1][playerY] != true) {
 				playerX += 1;
 				updateLighting();
+				lastMoveTime = System.currentTimeMillis();
 			}
 			playerDir = 1;
 		}
@@ -398,6 +406,7 @@ public class Client extends JFrame {
 			if (walls[playerX][playerY + 1] != true) {
 				playerY += 1;
 				updateLighting();
+				lastMoveTime = System.currentTimeMillis();
 			}
 			playerDir = 2;
 		}
@@ -406,6 +415,7 @@ public class Client extends JFrame {
 			if (walls[playerX][playerY - 1] != true) {
 				playerY -= 1;
 				updateLighting();
+				lastMoveTime = System.currentTimeMillis();
 			}
 			playerDir = 0;
 		}
@@ -457,19 +467,15 @@ public class Client extends JFrame {
 	
 	//This method should take in some variables
 	void startGame(float[][] maze) {
-		
-		//TEST FOR GUI
-		
 		MazeGenerator g = new MazeGenerator(maze);
-		// TODO: Get Maze from server
 		boolean[][] walls = g.getMaze();
 		g.showMaze();
 		
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
-
 		currentPanel.requestFocus();
+		
 		revalidate();
 		repaint();
 	}
@@ -478,6 +484,7 @@ public class Client extends JFrame {
 		remove(currentPanel);
 		currentPanel = new InstructionPanel();
 		add(currentPanel);
+		currentPanel.requestFocus();
 
 		revalidate();
 		repaint();
