@@ -327,22 +327,38 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerLeft() {
-			playerX -= 320;
+			int playerXIndex = (int) Math.floor(playerX/320.0);
+			int playerYIndex = (int) Math.floor(playerY/320.0);
+			if (walls[playerXIndex - 1][playerYIndex] != true) {
+				playerX -= 320;
+			}
 			playerDir = 3;
 		}
 
 		private void movePlayerRight() {
-			playerX += 320;
+			int playerXIndex = (int) Math.floor(playerX/320.0);
+			int playerYIndex = (int) Math.floor(playerY/320.0);
+			if (walls[playerXIndex + 1][playerYIndex] != true) {
+				playerX += 320;
+			}
 			playerDir = 1;
 		}
 
 		private void movePlayerDown() {
-			playerY += 320;
+			int playerXIndex = (int) Math.floor(playerX/320.0);
+			int playerYIndex = (int) Math.floor(playerY/320.0);
+			if (walls[playerXIndex][playerYIndex + 1] != true) {
+				playerY += 320;
+			}
 			playerDir = 2;
 		}
 
 		private void movePlayerUp() {
-			playerY -= 320;
+			int playerXIndex = (int) Math.floor(playerX/320.0);
+			int playerYIndex = (int) Math.floor(playerY/320.0);
+			if (walls[playerXIndex][playerYIndex - 1] != true) {
+				playerY -= 320;
+			}
 			playerDir = 0;
 		}
 	}
