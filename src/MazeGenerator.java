@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class MazeGenerator {
-	final int HEIGHT = 11;
-	final int WIDTH = 11;
+	final int HEIGHT = 19;
+	final int WIDTH = 19;
 
 	enum Directions {
 		UP,
@@ -91,13 +91,22 @@ public class MazeGenerator {
 		}
 	}
 
-/*	public void showMaze() {
+	public void showMaze() {
 		for (int i = 0; i < HEIGHT; i++) {
 			for (int j = 0; j < WIDTH; j++) {
 				System.out.print(maze[i][j] + " ");
 			}
 			System.out.println("");
 		}
-	}*/
+	}
 
+	public boolean[][] getMaze(){
+		boolean[][] boolMaze = new boolean[WIDTH][HEIGHT];
+		for (int i = 0; i < HEIGHT; i++) {
+			for (int j = 0; j < WIDTH; j++) {
+				boolMaze[i][j] = maze[i][j] > 0.9f;
+			}
+		}
+		return boolMaze;
+	}
 }

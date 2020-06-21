@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.File;
 import java.io.IOException;
 
@@ -88,25 +89,89 @@ public class Gui extends JFrame {
 		float playerY;
 		
 		private boolean[][] walls;
-		private int[][] lighting;
+		private float[][] lighting;
+		
+		private BufferedImage IMGWallConnect;
+		private BufferedImage IMGWallStraight;
+		private BufferedImage IMGFloor;
+		private BufferedImage IMGNoise;
 		
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
+			
+			try{
+				IMGWallConnect = ImageIO.read(new File("assets\\connector.png"));
+				IMGWallStraight = ImageIO.read(new File("assets\\wall.png"));
+				
+				IMGFloor = ImageIO.read(new File("assets\\path.png"));
+				IMGNoise = ImageIO.read(new File("assets\\noise.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			this.requestFocus();
+			this.setOpaque(true);
 			this.walls = walls;
 			mapSizeX = this.walls.length;
 			mapSizeY = this.walls[0].length;
 			
 			playerX = playerSpawnX;
 			playerY = playerSpawnY;
-			lighting = new int[mapSizeX][mapSizeY];
+			lighting = new float[mapSizeX][mapSizeY];
+			for (int i = 0; i < mapSizeX; i++) {
+				for (int j = 0; j < mapSizeY; j++) {
+					lighting[i][j] = 1.0f;
+				}
+			}
 		}
 		
 		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
-			g2.setBackground(Color.BLUE);
-			g2.setPaint(Color.BLACK);
-			g2.drawRect(30,30,50,30);
+			g2.setBackground(Color.BLACK);
+			g2.clearRect(0,0,this.getWidth(),this.getHeight());
+			
+			BufferedImage map = new BufferedImage(mapSizeX * 320, mapSizeY * 320, 2);
+			Graphics2D map2d = map.createGraphics();
+			
+			for (int x = 0; x < mapSizeX; x++) {
+				for (int y = 0; y < mapSizeY; y++) {
+					if (lighting[x][y] > 0) {
+						map2d.drawImage(IMGFloor, x * 320, y * 320, null);
+						if (walls[x][y] == true) {
+							if (x > 0 && x < mapSizeX-1 && y > 0 && y < mapSizeY - 1) {
+								if (walls[x-1][y] == true && walls[x+1][y] == true && walls[x][y+1] == false && walls[x][y-1] == false) {
+									BufferedImage temp = new BufferedImage(320,320,2);
+									
+									Graphics2D temp2d = temp.createGraphics();
+									temp2d.setColor(new Color(0,0,0,0));
+									temp2d.fillRect(0,0,360,360);
+									temp2d.rotate(Math.PI/2 , 160,160);
+									temp2d.drawImage(IMGWallStraight,0,0,null);
+									temp2d.dispose();
+									
+									map2d.drawImage(temp, x * 320, y * 320, null);
+								} else if (walls[x-1][y] == false && walls[x+1][y] == false && walls[x][y+1] == true && walls[x][y-1] == true) {
+									map2d.drawImage(IMGWallStraight, x * 320, y * 320, null);
+								}
+							}
+						}
+					} else {
+						map2d.setPaint(Color.BLACK);
+						map2d.drawRect(x * 320, y * 320, 320,320);
+					}
+				}
+			}
+			
+			//ADD player rendering here
+			//Each tile is 320px
+			
+			
+			//Gets rid of the 2d graphics
+			map2d.dispose();
+			
+			//Replace with a properly scaled version based on player Pos
+			//Instead of filling it to screen
+			g2.drawImage(map,0,0, this.getWidth(), this.getHeight(), null);
 		}
 	}
 	
@@ -114,10 +179,10 @@ public class Gui extends JFrame {
 	void startGame() {
 		
 		//TEST FOR GUI
-		boolean[][] walls = new boolean[][]{
-				{true,true,true},
-				{false,false,false},
-				{false,false,false}};
+		
+		MazeGenerator g = new MazeGenerator();
+		boolean[][] walls = g.getMaze();
+		g.showMaze();
 		
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
