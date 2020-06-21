@@ -1,6 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -24,8 +26,8 @@ public class Client extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		
-		connection = new Connection();
-		connection.go();
+		//connection = new Connection();
+		//connection.go();
 
 	}
 	
@@ -67,10 +69,10 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
-					connection.sendMsg(Messages.SET_USERNAME + username);
+					//connection.sendMsg(Messages.SET_USERNAME + username);
 
 
-					//startGame();
+					startGame();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -92,12 +94,12 @@ public class Client extends JFrame {
 		}
 	}
 
-	class GamePanel extends JPanel {
+	class GamePanel extends JPanel implements KeyListener {
 		private int mapSizeX;
 		private int mapSizeY;
 		
-		float playerX;
-		float playerY;
+		int playerX;
+		int playerY;
 		
 		private boolean[][] walls;
 		private float[][] lighting;
@@ -134,8 +136,9 @@ public class Client extends JFrame {
 					lighting[i][j] = 1.0f;
 				}
 			}
-		}
 
+			this.addKeyListener(this);
+		}
 		
 		@Override
 		protected void paintComponent(Graphics g) {
@@ -260,10 +263,11 @@ public class Client extends JFrame {
 					}
 				}
 			}
-			
+
 			//ADD player rendering here
+			map2d.fillRect(playerX, playerY, 320, 320);
 			//Each tile is 320px
-			
+
 			
 			//Gets rid of the 2d graphics
 			map2d.dispose();
@@ -280,6 +284,54 @@ public class Client extends JFrame {
 			
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
+
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			char code = e.getKeyChar();
+			System.out.println(code);
+
+			if (code == 'w') {
+				System.out.println(code);
+				movePlayerUp();
+			} else if (code == 'd') {
+				movePlayerDown();
+			} else if (code == 'a') {
+				movePlayerLeft();
+			} else if (code == 'd') {
+				movePlayerRight();
+			}
+
+			this.repaint();
+
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+
+		}
+
+		private void movePlayerLeft() {
+			playerX -= 2;
+		}
+
+		private void movePlayerRight() {
+			playerX += 2;
+		}
+
+		private void movePlayerDown() {
+			playerY -= 2;
+		}
+
+		private void movePlayerUp() {
+			playerY += 2;
+		}
+
 	}
 
 	class InstructionPanel extends JPanel {
