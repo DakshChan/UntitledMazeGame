@@ -1,6 +1,8 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -24,8 +26,9 @@ public class Client extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		
-		connection = new Connection();
-		connection.go();
+		//connection = new Connection();
+		//connection.go();
+
 	}
 	
 	class MainMenuPanel extends JPanel implements MouseListener {
@@ -33,7 +36,7 @@ public class Client extends JFrame {
 		
 		MainMenuPanel() {
 			try {
-				menuImage = ImageIO.read(new File("assets\\UMG - MainMenu.png"));
+				menuImage = ImageIO.read(new File("assets/UMG - MainMenu.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 				menuImage = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
@@ -66,10 +69,10 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
-					System.out.println(username);
-					connection.sendMsg(Messages.SET_USERNAME + username);
+					//connection.sendMsg(Messages.SET_USERNAME + username);
 
-					//startGame();
+
+					startGame();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -91,12 +94,12 @@ public class Client extends JFrame {
 		}
 	}
 
-	class GamePanel extends JPanel {
+	class GamePanel extends JPanel implements KeyListener {
 		private int mapSizeX;
 		private int mapSizeY;
 		
-		float playerX;
-		float playerY;
+		int playerX;
+		int playerY;
 		
 		private boolean[][] walls;
 		private float[][] lighting;
@@ -106,15 +109,17 @@ public class Client extends JFrame {
 		private BufferedImage IMGWallStraight;
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
+		private BufferedImage IMGPlayer;
 		
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
 			try{
-				IMGWallConnect = ImageIO.read(new File("assets\\connector.png"));
-				IMGWallStraight = ImageIO.read(new File("assets\\wall.png"));
-				IMGWallNub = ImageIO.read(new File("assets\\connectorNub.png"));
-				IMGFloor = ImageIO.read(new File("assets\\path.png"));
-				IMGNoise = ImageIO.read(new File("assets\\noise.png"));
+				IMGWallConnect = ImageIO.read(new File("assets/connector.png"));
+				IMGWallStraight = ImageIO.read(new File("assets/wall.png"));
+				IMGWallNub = ImageIO.read(new File("assets/connectorNub.png"));
+				IMGFloor = ImageIO.read(new File("assets/path.png"));
+				IMGNoise = ImageIO.read(new File("assets/noise.png"));
+				IMGPlayer = ImageIO.read(new File("assets/player.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -125,16 +130,18 @@ public class Client extends JFrame {
 			mapSizeX = this.walls.length;
 			mapSizeY = this.walls[0].length;
 			
-			playerX = playerSpawnX;
-			playerY = playerSpawnY;
+			playerX = playerSpawnX*360;
+			playerY = playerSpawnY*360;
+
 			lighting = new float[mapSizeX][mapSizeY];
 			for (int i = 0; i < mapSizeX; i++) {
 				for (int j = 0; j < mapSizeY; j++) {
 					lighting[i][j] = 1.0f;
 				}
 			}
-		}
 
+			this.addKeyListener(this);
+		}
 		
 		@Override
 		protected void paintComponent(Graphics g) {
@@ -259,10 +266,11 @@ public class Client extends JFrame {
 					}
 				}
 			}
-			
+
 			//ADD player rendering here
 			//Each tile is 320px
-			
+			map2d.fillRect(playerX, playerY, 320, 320);
+
 			
 			//Gets rid of the 2d graphics
 			map2d.dispose();
@@ -279,6 +287,52 @@ public class Client extends JFrame {
 			
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
+
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			char code = e.getKeyChar();
+
+			if (code == 'w') {
+				movePlayerUp();
+			} else if (code == 's') {
+				movePlayerDown();
+			} else if (code == 'a') {
+				movePlayerLeft();
+			} else if (code == 'd') {
+				movePlayerRight();
+			}
+
+			repaint();
+
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+
+		}
+
+		private void movePlayerLeft() {
+			playerX -= 360;
+		}
+
+		private void movePlayerRight() {
+			playerX += 360;
+		}
+
+		private void movePlayerDown() {
+			playerY += 360;
+		}
+
+		private void movePlayerUp() {
+			playerY -= 360;
+		}
+
 	}
 
 	class InstructionPanel extends JPanel {
@@ -296,11 +350,11 @@ public class Client extends JFrame {
 	}
 	
 	//This method should take in some variables
-	void startGame(float[][] maze) {
+	void startGame() {
 		
 		//TEST FOR GUI
 		
-		MazeGenerator g = new MazeGenerator(maze);
+		MazeGenerator g = new MazeGenerator();
 		// TODO: Get Maze from server
 		boolean[][] walls = g.getMaze();
 		//g.showMaze();
@@ -308,10 +362,12 @@ public class Client extends JFrame {
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
-		
+
+		currentPanel.requestFocus();
 		revalidate();
 		repaint();
 	}
+
 
 	void showInstructions() {
 		remove(currentPanel);
@@ -356,11 +412,13 @@ public class Client extends JFrame {
 				try {
 					if (input.ready()) {
 						String msg = input.readLine();
-						System.out.println(msg);
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.START_GAME)) {
-							startGame(parseMaze(body));
+							ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
+							float[][] maze = (float[][])is.readObject();
+							System.out.println(maze[0][0]);
+							
 						}
 						
 					}
@@ -387,31 +445,5 @@ public class Client extends JFrame {
 		}
 		
 	}
-
-	private static float[][] parseMaze(String maze) 	{
-
-		int row = 0;
-		int column = 0;
-
-		float[][] arr = new float[MazeGenerator.HEIGHT][MazeGenerator.WIDTH];
-
-		for (int i = 0; i < maze.length(); i++) {
-			char cell = maze.charAt(i);
-			if (cell == '1') {
-				System.out.println(row);
-				System.out.println(column);
-				arr[row][column] = 1.0f;
-				column++;
-			} else if (cell == '0') {
-				arr[row][column] = 0.0f;
-				column++;
-			} else if (cell == 'l') {
-				row++;
-				column = 0;
-			}
-		}
-
-		return arr;
-	}
-
+	
 }
