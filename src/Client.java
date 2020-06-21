@@ -128,8 +128,9 @@ public class Client extends JFrame {
 			mapSizeX = this.walls.length;
 			mapSizeY = this.walls[0].length;
 			
-			playerX = playerSpawnX;
-			playerY = playerSpawnY;
+			playerX = playerSpawnX*360;
+			playerY = playerSpawnY*360;
+
 			lighting = new float[mapSizeX][mapSizeY];
 			for (int i = 0; i < mapSizeX; i++) {
 				for (int j = 0; j < mapSizeY; j++) {
@@ -265,8 +266,8 @@ public class Client extends JFrame {
 			}
 
 			//ADD player rendering here
-			map2d.fillRect(playerX, playerY, 320, 320);
 			//Each tile is 320px
+			map2d.fillRect(playerX, playerY, 320, 320);
 
 			
 			//Gets rid of the 2d graphics
@@ -294,12 +295,10 @@ public class Client extends JFrame {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
-			System.out.println(code);
 
 			if (code == 'w') {
-				System.out.println(code);
 				movePlayerUp();
-			} else if (code == 'd') {
+			} else if (code == 's') {
 				movePlayerDown();
 			} else if (code == 'a') {
 				movePlayerLeft();
@@ -307,7 +306,7 @@ public class Client extends JFrame {
 				movePlayerRight();
 			}
 
-			this.repaint();
+			repaint();
 
 		}
 
@@ -317,19 +316,19 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerLeft() {
-			playerX -= 2;
+			playerX -= 360;
 		}
 
 		private void movePlayerRight() {
-			playerX += 2;
+			playerX += 360;
 		}
 
 		private void movePlayerDown() {
-			playerY -= 2;
+			playerY += 360;
 		}
 
 		private void movePlayerUp() {
-			playerY += 2;
+			playerY -= 360;
 		}
 
 	}
