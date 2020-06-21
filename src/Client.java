@@ -25,6 +25,8 @@ public class Client extends JFrame {
 		this.setVisible(true);
 		
 		connection = new Connection();
+		connection.go();
+
 	}
 	
 	class MainMenuPanel extends JPanel implements MouseListener {
@@ -32,7 +34,7 @@ public class Client extends JFrame {
 		
 		MainMenuPanel() {
 			try {
-				menuImage = ImageIO.read(new File("assets\\UMG - MainMenu.png"));
+				menuImage = ImageIO.read(new File("assets/UMG - MainMenu.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 				menuImage = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
@@ -109,11 +111,11 @@ public class Client extends JFrame {
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
 			try{
-				IMGWallConnect = ImageIO.read(new File("assets\\connector.png"));
-				IMGWallStraight = ImageIO.read(new File("assets\\wall.png"));
-				IMGWallNub = ImageIO.read(new File("assets\\connectorNub.png"));
-				IMGFloor = ImageIO.read(new File("assets\\path.png"));
-				IMGNoise = ImageIO.read(new File("assets\\noise.png"));
+				IMGWallConnect = ImageIO.read(new File("assets/connector.png"));
+				IMGWallStraight = ImageIO.read(new File("assets/wall.png"));
+				IMGWallNub = ImageIO.read(new File("assets/connectorNub.png"));
+				IMGFloor = ImageIO.read(new File("assets/path.png"));
+				IMGNoise = ImageIO.read(new File("assets/noise.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -311,6 +313,7 @@ public class Client extends JFrame {
 		revalidate();
 		repaint();
 	}
+
 
 	void showInstructions() {
 		remove(currentPanel);
