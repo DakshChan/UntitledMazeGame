@@ -100,6 +100,7 @@ public class Gui extends JFrame {
 		private float[][] lighting;
 		
 		private BufferedImage IMGWallConnect;
+		private BufferedImage IMGWallNub;
 		private BufferedImage IMGWallStraight;
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
@@ -109,7 +110,7 @@ public class Gui extends JFrame {
 			try{
 				IMGWallConnect = ImageIO.read(new File("assets\\connector.png"));
 				IMGWallStraight = ImageIO.read(new File("assets\\wall.png"));
-				
+				IMGWallNub = ImageIO.read(new File("assets\\connectorNub.png"));
 				IMGFloor = ImageIO.read(new File("assets\\path.png"));
 				IMGNoise = ImageIO.read(new File("assets\\noise.png"));
 			} catch (IOException e) {
@@ -208,6 +209,7 @@ public class Gui extends JFrame {
 								
 								map2d.drawImage(temp, x * 320, y * 320, null);
 							} else {
+								map2d.drawImage(IMGWallNub,x * 320,y * 320,null);
 								if (up) {
 									map2d.drawImage(IMGWallConnect, x * 320, y * 320, null);
 								}
@@ -265,7 +267,15 @@ public class Gui extends JFrame {
 			
 			//Replace with a properly scaled version based on player Pos
 			//Instead of filling it to screen
-			g2.drawImage(map,0,0, this.getWidth(), this.getHeight(), null);
+			int small = 0;
+			if (this.getWidth() < this.getHeight()) {
+				small = this.getWidth();
+			} else {
+				small = this.getHeight();
+			}
+			
+			
+			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
 	}
 
