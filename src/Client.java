@@ -6,7 +6,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 import java.io.*;
 import java.net.Socket;
 
@@ -102,7 +101,7 @@ public class Client extends JFrame {
 		int playerDir; //0 Up, 1 Right, 2 Down, 3 Left
 		
 		private boolean[][] walls;
-		private float[][] lighting;
+		private int[][] lighting;
 		
 		private BufferedImage IMGWallConnect;
 		private BufferedImage IMGWallNub;
@@ -135,13 +134,8 @@ public class Client extends JFrame {
 			
 			
 
-			lighting = new float[mapSizeX][mapSizeY];
-			for (int i = 0; i < mapSizeX; i++) {
-				for (int j = 0; j < mapSizeY; j++) {
-					lighting[i][j] = 1.0f;
-				}
-			}
-
+			lighting = new int[mapSizeX][mapSizeY];
+			
 			this.addKeyListener(this);
 		}
 
@@ -262,6 +256,21 @@ public class Client extends JFrame {
 								}
 							}
 						}
+						//Apply Lighting
+						//IMGNoise should be turned more translucent the higher the light
+						//int 5 should be max light or something
+						
+						BufferedImage temp = new BufferedImage(320,320,2);
+						Graphics2D temp2d = temp.createGraphics();
+						temp2d.setColor(new Color(0,0,0,0));
+						temp2d.fillRect(0,0,320,320);
+						AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) -(lighting[x][y]/5.0) + 1);
+						temp2d.setComposite(alcom);
+						temp2d.drawImage(IMGNoise,0,0,null);
+						temp2d.dispose();
+						
+						map2d.drawImage(temp, x * 320, y * 320, null);
+						
 					} else {
 						map2d.setPaint(Color.BLACK);
 						map2d.drawRect(x * 320, y * 320, 320,320);
@@ -281,7 +290,6 @@ public class Client extends JFrame {
 			
 			map2d.drawImage(temp, playerX, playerY, null);
 			
-			
 			//Gets rid of the 2d graphics
 			map2d.dispose();
 			
@@ -294,14 +302,36 @@ public class Client extends JFrame {
 				small = this.getHeight();
 			}
 			
-			
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
 		
-		@Override
-		public void keyTyped(KeyEvent e) {
-
+		private void recursiveUpdateLighting(int x, int y, int lightLevel) {
+			if (lightLevel == 0) {
+				return;
+			}
+			if (lighting[x][y] != 0) {
+				return;
+			}
+			lighting[x][y] = lightLevel;
+			if (walls[x][y] == true) {
+				return;
+			}
+			if (x > 0) {
+				recursiveUpdateLighting(x-1, y, lightLevel-1);
+			}
+			if (x < mapSizeX-1) {
+				recursiveUpdateLighting(x + 1, y, lightLevel-1);
+			}
+			if (y > 0) {
+				recursiveUpdateLighting(x, y + 1, lightLevel - 1);
+			}
+			if (y < mapSizeY) {
+				recursiveUpdateLighting(x, y - 1, lightLevel - 1);
+			}
 		}
+		
+		@Override
+		public void keyTyped(KeyEvent e) {}
 
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -322,15 +352,19 @@ public class Client extends JFrame {
 		}
 
 		@Override
-		public void keyReleased(KeyEvent e) {
-
-		}
+		public void keyReleased(KeyEvent e) {}
 
 		private void movePlayerLeft() {
 			int playerXIndex = (int) Math.floor(playerX/320.0);
 			int playerYIndex = (int) Math.floor(playerY/320.0);
 			if (walls[playerXIndex - 1][playerYIndex] != true) {
 				playerX -= 320;
+				for (int i = 0; i < mapSizeX; i++) {
+					for (int j = 0; j < mapSizeY; j++) {
+						lighting[i][j] = 0;
+					}
+				}
+				recursiveUpdateLighting(playerXIndex-1, playerYIndex,5);
 			}
 			playerDir = 3;
 		}
@@ -340,6 +374,12 @@ public class Client extends JFrame {
 			int playerYIndex = (int) Math.floor(playerY/320.0);
 			if (walls[playerXIndex + 1][playerYIndex] != true) {
 				playerX += 320;
+				for (int i = 0; i < mapSizeX; i++) {
+					for (int j = 0; j < mapSizeY; j++) {
+						lighting[i][j] = 0;
+					}
+				}
+				recursiveUpdateLighting(playerXIndex+1, playerYIndex,5);
 			}
 			playerDir = 1;
 		}
@@ -349,6 +389,12 @@ public class Client extends JFrame {
 			int playerYIndex = (int) Math.floor(playerY/320.0);
 			if (walls[playerXIndex][playerYIndex + 1] != true) {
 				playerY += 320;
+				for (int i = 0; i < mapSizeX; i++) {
+					for (int j = 0; j < mapSizeY; j++) {
+						lighting[i][j] = 0;
+					}
+				}
+				recursiveUpdateLighting(playerXIndex, playerYIndex+1,5);
 			}
 			playerDir = 2;
 		}
@@ -358,6 +404,12 @@ public class Client extends JFrame {
 			int playerYIndex = (int) Math.floor(playerY/320.0);
 			if (walls[playerXIndex][playerYIndex - 1] != true) {
 				playerY -= 320;
+				for (int i = 0; i < mapSizeX; i++) {
+					for (int j = 0; j < mapSizeY; j++) {
+						lighting[i][j] = 0;
+					}
+				}
+				recursiveUpdateLighting(playerXIndex, playerYIndex-1,5);
 			}
 			playerDir = 0;
 		}
@@ -425,7 +477,6 @@ public class Client extends JFrame {
 		revalidate();
 		repaint();
 	}
-
 
 	void showInstructions() {
 		remove(currentPanel);
