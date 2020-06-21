@@ -47,6 +47,8 @@ public class MazeGenerator {
 
 		maze[1][2] = 1.0f;
 		maze[HEIGHT - 2][WIDTH - 3] = 1.0f;
+
+		this.showMaze();
 	}
 
 	private void generator(int cx, int cy, float[][] grid) {
@@ -107,7 +109,7 @@ public class MazeGenerator {
 		boolean[][] boolMaze = new boolean[WIDTH][HEIGHT];
 		for (int i = 0; i < HEIGHT; i++) {
 			for (int j = 0; j < WIDTH; j++) {
-				boolMaze[i][j] = maze[i][j] > 0.9f;
+				boolMaze[i][j] = maze[i][j] != 1.0f;
 			}
 		}
 		return boolMaze;
