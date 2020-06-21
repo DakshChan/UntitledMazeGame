@@ -69,6 +69,7 @@ class Server {
 								lobbies.add(new Lobby());
 								System.out.println(lobbies.size());
 							}
+							// add the last player before starting the game
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
 							MazeGenerator mazeGenerator = new MazeGenerator();
@@ -87,10 +88,35 @@ class Server {
 							}
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
+						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
+							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							for (int i = 0; i < lobby.playerSockets.length; i++) {
+								lobby.playerSockets[i].output.println(Messages.MOVED_UP + body);
+								lobby.playerSockets[i].output.flush();
+							}
+						} else if (Messages.compareHeaders(header, Messages.MOVED_DOWN)) {
+							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							for (int i = 0; i < lobby.playerSockets.length; i++) {
+								lobby.playerSockets[i].output.println(Messages.MOVED_DOWN + body);
+								lobby.playerSockets[i].output.flush();
+							}
+						} else if (Messages.compareHeaders(header, Messages.MOVED_LEFT)) {
+							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							for (int i = 0; i < lobby.playerSockets.length; i++) {
+								lobby.playerSockets[i].output.println(Messages.MOVED_LEFT + body);
+								lobby.playerSockets[i].output.flush();
+							}
+						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
+							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							for (int i = 0; i < lobby.playerSockets.length; i++) {
+								lobby.playerSockets[i].output.println(Messages.MOVED_RIGHT + body);
+								lobby.playerSockets[i].output.flush();
+							}
 						}
 					}
 				} catch (IOException e) {
 					System.out.println("Failed to receive message from the client.");
+					System.exit(1);
 					e.printStackTrace();
 				}
 			}
