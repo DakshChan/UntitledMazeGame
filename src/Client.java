@@ -71,7 +71,7 @@ public class Client extends JFrame {
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
 					connection.sendMsg(Messages.SET_USERNAME + username);
 
-					//startGame();
+					startGame(connection.maze);
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -286,8 +286,7 @@ public class Client extends JFrame {
 			
 			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
-
-
+		
 		@Override
 		public void keyTyped(KeyEvent e) {
 
@@ -331,12 +330,10 @@ public class Client extends JFrame {
 		private void movePlayerUp() {
 			playerY -= 320;
 		}
-
 	}
 
 	class InstructionPanel extends JPanel {
-
-
+		
 		InstructionPanel() {
 			this.requestFocus();
 		}
@@ -419,6 +416,8 @@ public class Client extends JFrame {
 		
 		boolean enteredGame = false;
 		
+		public float[][] maze;
+		
 		public void go() {
 			
 			//create a socket (try-catch required) and attempt a connection to the local IP address
@@ -445,7 +444,7 @@ public class Client extends JFrame {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.START_GAME)) {
-							startGame(parseMaze(body));
+							maze = parseMaze(body);
 						}
 						
 					}
