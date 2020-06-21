@@ -99,6 +99,7 @@ public class Client extends JFrame {
 		
 		int playerX;
 		int playerY;
+		int playerDir; //0 Up, 1 Right, 2 Down, 3 Left
 		
 		private boolean[][] walls;
 		private float[][] lighting;
@@ -109,7 +110,7 @@ public class Client extends JFrame {
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
 		private BufferedImage IMGPlayer;
-
+		
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
 			try{
@@ -131,6 +132,8 @@ public class Client extends JFrame {
 			
 			playerX = playerSpawnX*320;
 			playerY = playerSpawnY*320;
+			
+			
 
 			lighting = new float[mapSizeX][mapSizeY];
 			for (int i = 0; i < mapSizeX; i++) {
@@ -265,11 +268,19 @@ public class Client extends JFrame {
 					}
 				}
 			}
-
-			//ADD player rendering here
-			//Each tile is 320px
-			map2d.drawImage(IMGPlayer, playerX, playerY, null);
-
+			
+			//Renders player onto Map
+			BufferedImage temp = new BufferedImage(320,320,2);
+			
+			Graphics2D temp2d = temp.createGraphics();
+			temp2d.setColor(new Color(0,0,0,0));
+			temp2d.fillRect(0,0,320,320);
+			temp2d.rotate(Math.PI/2 * playerDir, 160,160);
+			temp2d.drawImage(IMGPlayer,0,0,null);
+			temp2d.dispose();
+			
+			map2d.drawImage(temp, playerX, playerY, null);
+			
 			
 			//Gets rid of the 2d graphics
 			map2d.dispose();
@@ -317,18 +328,22 @@ public class Client extends JFrame {
 
 		private void movePlayerLeft() {
 			playerX -= 320;
+			playerDir = 3;
 		}
 
 		private void movePlayerRight() {
 			playerX += 320;
+			playerDir = 1;
 		}
 
 		private void movePlayerDown() {
 			playerY += 320;
+			playerDir = 2;
 		}
 
 		private void movePlayerUp() {
 			playerY -= 320;
+			playerDir = 0;
 		}
 	}
 
