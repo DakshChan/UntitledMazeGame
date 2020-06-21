@@ -24,8 +24,8 @@ public class Client extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		
-		connection = new Connection();
-		connection.go();
+//		connection = new Connection();
+//		connection.go();
 
 	}
 	
@@ -67,10 +67,10 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
-					connection.sendMsg(Messages.SET_USERNAME + username);
+//					connection.sendMsg(Messages.SET_USERNAME + username);
 
 
-					//startGame();
+					startGame();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -292,7 +292,18 @@ public class Client extends JFrame {
 		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
-			g2.drawString("Hello World", 100, 100);
+
+			// graphics setup
+			RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setRenderingHints(renderingHints);
+			Font font = new Font("Arial", Font.PLAIN, 24);
+			g2.setFont(font);
+
+			// text ew
+			String instructionTitle = "Instructions";
+			g2.drawString(instructionTitle, 100, 100);
+			String instructionText = "Every player is sent the same maze and must race to the finish.";
+			g2.drawString(instructionText, 100, 100);
 		}
 	}
 	
