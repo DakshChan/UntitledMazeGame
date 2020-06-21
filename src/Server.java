@@ -65,6 +65,10 @@ class Server {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME) {
+							if (clientCounter == 1) { // make a new lobby
+								lobbies.add(new Lobby());
+								System.out.println(lobbies.size());
+							}
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
 							MazeGenerator mazeGenerator = new MazeGenerator();

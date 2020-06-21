@@ -71,7 +71,7 @@ public class Client extends JFrame {
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
 					connection.sendMsg(Messages.SET_USERNAME + username);
 
-					startGame(connection.maze);
+					//startGame(connection.maze);
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -445,6 +445,8 @@ public class Client extends JFrame {
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							maze = parseMaze(body);
+							System.out.println("huh?!");
+							startGame(maze);
 						}
 						
 					}
