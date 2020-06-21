@@ -133,25 +133,110 @@ public class Gui extends JFrame {
 			BufferedImage map = new BufferedImage(mapSizeX * 320, mapSizeY * 320, 2);
 			Graphics2D map2d = map.createGraphics();
 			
+			boolean left = false;
+			boolean right = false;
+			boolean up = false;
+			boolean down = false;
+			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
 					if (lighting[x][y] > 0) {
 						map2d.drawImage(IMGFloor, x * 320, y * 320, null);
 						if (walls[x][y] == true) {
-							if (x > 0 && x < mapSizeX-1 && y > 0 && y < mapSizeY - 1) {
-								if (walls[x-1][y] == true && walls[x+1][y] == true && walls[x][y+1] == false && walls[x][y-1] == false) {
+							left = false;
+							right = false;
+							up = false;
+							down = false;
+							
+							if (x > 0 && x < mapSizeX - 1) {
+								if (walls[x-1][y] == true) {
+									left = true;
+								}
+								if (walls[x+1][y] == true) {
+									right = true;
+								}
+							} else if (x == 0) {
+								left = false;
+								if (walls[x+1][y] == true) {
+									right = true;
+								}
+							} else {
+								right = false;
+								if (walls[x-1][y] == true) {
+									left = true;
+								}
+							}
+							if (y > 0 && y < mapSizeY - 1) {
+								if (walls[x][y-1] == true) {
+									up = true;
+								}
+								if (walls[x][y+1] == true) {
+									down = true;
+								}
+							} else if (y == 0) {
+								up = false;
+								if (walls[x][y+1] == true) {
+									down = true;
+								}
+							} else {
+								down = false;
+								if (walls[x][y-1] == true) {
+									up = true;
+								}
+							}
+							
+							if ((up && down) && !(left || right)) {
+								map2d.drawImage(IMGWallStraight, x * 320, y * 320, null);
+							} else if ((left && right) && !(down || up)) {
+								BufferedImage temp = new BufferedImage(320,320,2);
+								
+								Graphics2D temp2d = temp.createGraphics();
+								temp2d.setColor(new Color(0,0,0,0));
+								temp2d.fillRect(0,0,360,360);
+								temp2d.rotate(Math.PI/2 , 160,160);
+								temp2d.drawImage(IMGWallStraight,0,0,null);
+								temp2d.dispose();
+								
+								map2d.drawImage(temp, x * 320, y * 320, null);
+							} else {
+								if (up) {
+									map2d.drawImage(IMGWallConnect, x * 320, y * 320, null);
+								}
+								if (down) {
+									BufferedImage temp = new BufferedImage(320,320,2);
+									
+									Graphics2D temp2d = temp.createGraphics();
+									temp2d.setColor(new Color(0,0,0,0));
+									temp2d.fillRect(0,0,360,360);
+									temp2d.rotate(Math.PI , 160,160);
+									temp2d.drawImage(IMGWallConnect,0,0,null);
+									temp2d.dispose();
+									
+									map2d.drawImage(temp, x * 320, y * 320, null);
+								}
+								if (left) {
+									BufferedImage temp = new BufferedImage(320,320,2);
+									
+									Graphics2D temp2d = temp.createGraphics();
+									temp2d.setColor(new Color(0,0,0,0));
+									temp2d.fillRect(0,0,360,360);
+									temp2d.rotate(3 * Math.PI/2, 160,160);
+									temp2d.drawImage(IMGWallConnect,0,0,null);
+									temp2d.dispose();
+									
+									map2d.drawImage(temp, x * 320, y * 320, null);
+								}
+								if (right) {
 									BufferedImage temp = new BufferedImage(320,320,2);
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
 									temp2d.fillRect(0,0,360,360);
 									temp2d.rotate(Math.PI/2 , 160,160);
-									temp2d.drawImage(IMGWallStraight,0,0,null);
+									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
 									map2d.drawImage(temp, x * 320, y * 320, null);
-								} else if (walls[x-1][y] == false && walls[x+1][y] == false && walls[x][y+1] == true && walls[x][y-1] == true) {
-									map2d.drawImage(IMGWallStraight, x * 320, y * 320, null);
 								}
 							}
 						}
