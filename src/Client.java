@@ -129,8 +129,8 @@ public class Client extends JFrame {
 			mapSizeX = this.walls.length;
 			mapSizeY = this.walls[0].length;
 			
-			playerX = playerSpawnX*360;
-			playerY = playerSpawnY*360;
+			playerX = playerSpawnX*320;
+			playerY = playerSpawnY*320;
 
 			lighting = new float[mapSizeX][mapSizeY];
 			for (int i = 0; i < mapSizeX; i++) {
@@ -210,7 +210,7 @@ public class Client extends JFrame {
 								
 								Graphics2D temp2d = temp.createGraphics();
 								temp2d.setColor(new Color(0,0,0,0));
-								temp2d.fillRect(0,0,360,360);
+								temp2d.fillRect(0,0,320,320);
 								temp2d.rotate(Math.PI/2 , 160,160);
 								temp2d.drawImage(IMGWallStraight,0,0,null);
 								temp2d.dispose();
@@ -226,7 +226,7 @@ public class Client extends JFrame {
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,360,360);
+									temp2d.fillRect(0,0,320,320);
 									temp2d.rotate(Math.PI , 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
@@ -238,7 +238,7 @@ public class Client extends JFrame {
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,360,360);
+									temp2d.fillRect(0,0,320,320);
 									temp2d.rotate(3 * Math.PI/2, 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
@@ -250,7 +250,7 @@ public class Client extends JFrame {
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,360,360);
+									temp2d.fillRect(0,0,320,320);
 									temp2d.rotate(Math.PI/2 , 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
@@ -268,7 +268,7 @@ public class Client extends JFrame {
 
 			//ADD player rendering here
 			//Each tile is 320px
-			map2d.fillRect(playerX, playerY, 320, 320);
+			map2d.drawImage(IMGPlayer, playerX, playerY, null);
 
 			
 			//Gets rid of the 2d graphics
@@ -317,19 +317,19 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerLeft() {
-			playerX -= 360;
+			playerX -= 320;
 		}
 
 		private void movePlayerRight() {
-			playerX += 360;
+			playerX += 320;
 		}
 
 		private void movePlayerDown() {
-			playerY += 360;
+			playerY += 320;
 		}
 
 		private void movePlayerUp() {
-			playerY -= 360;
+			playerY -= 320;
 		}
 
 	}
