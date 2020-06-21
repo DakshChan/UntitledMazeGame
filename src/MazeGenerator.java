@@ -3,8 +3,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class MazeGenerator {
-	final int HEIGHT = 19;
-	final int WIDTH = 19;
+	final static int HEIGHT = 19;
+	final static int WIDTH = 19;
 
 	enum Directions {
 		UP,
@@ -14,6 +14,10 @@ public class MazeGenerator {
 	}
 
 	float[][] maze = new float[HEIGHT][WIDTH];
+
+	MazeGenerator(float[][] maze) {
+		this.maze = maze;
+	}
 
 	MazeGenerator() {
 		for(int i = 0; i < HEIGHT; i++) {

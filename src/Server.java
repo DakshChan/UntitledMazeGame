@@ -64,20 +64,19 @@ class Server {
 					if ((msg = input.readLine()) != null) {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
-						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == 2) {
+						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME) {
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
 							MazeGenerator mazeGenerator = new MazeGenerator();
+							String maze = parseMaze(mazeGenerator.maze);
+							System.out.println(maze);
 							clientCounter = 0;
 							for (int i = 0; i < lobby.playerSockets.length; i++) { // start game
-								lobby.playerSockets[i].output.println(Messages.START_GAME + "null");
+
+								lobby.playerSockets[i].output.println(Messages.START_GAME + maze);
 								lobby.playerSockets[i].output.flush();
-								ObjectOutputStream os = new ObjectOutputStream(lobby.playerSockets[i].socket.getOutputStream());
-								os.writeObject(mazeGenerator.maze);
-								os.flush();
-								System.out.println("sent maze");
 							}
-						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < 2) {
+						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < Lobby.PLAYERS_PER_GAME) {
 							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
 								System.out.println(lobbies.size());
@@ -94,4 +93,23 @@ class Server {
 
 		}
 	}
+
+	private static String parseMaze(float[][] maze) {
+
+		String str = "";
+
+		for (int i = 0; i < MazeGenerator.HEIGHT; i++) {
+			for (int j = 0; j < MazeGenerator.WIDTH; j++) {
+				if (maze[i][j] == 1.0f) {
+					str += "1";
+				} else {
+					str += "0";
+				}
+			}
+			str +="l";
+		}
+
+		return str;
+	}
+
 }

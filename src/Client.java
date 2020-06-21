@@ -26,8 +26,8 @@ public class Client extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		
-//		connection = new Connection();
-//		connection.go();
+		connection = new Connection();
+		connection.go();
 
 	}
 	
@@ -69,10 +69,9 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
-//					connection.sendMsg(Messages.SET_USERNAME + username);
+					connection.sendMsg(Messages.SET_USERNAME + username);
 
-
-					startGame();
+					//startGame();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -109,7 +108,8 @@ public class Client extends JFrame {
 		private BufferedImage IMGWallStraight;
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
-		
+		private BufferedImage IMGPlayer;
+
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
 			try{
@@ -118,6 +118,7 @@ public class Client extends JFrame {
 				IMGWallNub = ImageIO.read(new File("assets/connectorNub.png"));
 				IMGFloor = ImageIO.read(new File("assets/path.png"));
 				IMGNoise = ImageIO.read(new File("assets/noise.png"));
+				IMGPlayer = ImageIO.read(new File("assets/player.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -128,8 +129,9 @@ public class Client extends JFrame {
 			mapSizeX = this.walls.length;
 			mapSizeY = this.walls[0].length;
 			
-			playerX = playerSpawnX;
-			playerY = playerSpawnY;
+			playerX = playerSpawnX*320;
+			playerY = playerSpawnY*320;
+
 			lighting = new float[mapSizeX][mapSizeY];
 			for (int i = 0; i < mapSizeX; i++) {
 				for (int j = 0; j < mapSizeY; j++) {
@@ -208,7 +210,7 @@ public class Client extends JFrame {
 								
 								Graphics2D temp2d = temp.createGraphics();
 								temp2d.setColor(new Color(0,0,0,0));
-								temp2d.fillRect(0,0,360,360);
+								temp2d.fillRect(0,0,320,320);
 								temp2d.rotate(Math.PI/2 , 160,160);
 								temp2d.drawImage(IMGWallStraight,0,0,null);
 								temp2d.dispose();
@@ -224,7 +226,7 @@ public class Client extends JFrame {
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,360,360);
+									temp2d.fillRect(0,0,320,320);
 									temp2d.rotate(Math.PI , 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
@@ -236,7 +238,7 @@ public class Client extends JFrame {
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,360,360);
+									temp2d.fillRect(0,0,320,320);
 									temp2d.rotate(3 * Math.PI/2, 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
@@ -248,7 +250,7 @@ public class Client extends JFrame {
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,360,360);
+									temp2d.fillRect(0,0,320,320);
 									temp2d.rotate(Math.PI/2 , 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
@@ -265,8 +267,8 @@ public class Client extends JFrame {
 			}
 
 			//ADD player rendering here
-			map2d.fillRect(playerX, playerY, 320, 320);
 			//Each tile is 320px
+			map2d.drawImage(IMGPlayer, playerX, playerY, null);
 
 			
 			//Gets rid of the 2d graphics
@@ -294,12 +296,10 @@ public class Client extends JFrame {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
-			System.out.println(code);
 
 			if (code == 'w') {
-				System.out.println(code);
 				movePlayerUp();
-			} else if (code == 'd') {
+			} else if (code == 's') {
 				movePlayerDown();
 			} else if (code == 'a') {
 				movePlayerLeft();
@@ -307,7 +307,7 @@ public class Client extends JFrame {
 				movePlayerRight();
 			}
 
-			this.repaint();
+			repaint();
 
 		}
 
@@ -317,19 +317,19 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerLeft() {
-			playerX -= 2;
+			playerX -= 320;
 		}
 
 		private void movePlayerRight() {
-			playerX += 2;
+			playerX += 320;
 		}
 
 		private void movePlayerDown() {
-			playerY -= 2;
+			playerY += 320;
 		}
 
 		private void movePlayerUp() {
-			playerY += 2;
+			playerY -= 320;
 		}
 
 	}
@@ -380,11 +380,11 @@ public class Client extends JFrame {
 	}
 	
 	//This method should take in some variables
-	void startGame() {
+	void startGame(float[][] maze) {
 		
 		//TEST FOR GUI
 		
-		MazeGenerator g = new MazeGenerator();
+		MazeGenerator g = new MazeGenerator(maze);
 		// TODO: Get Maze from server
 		boolean[][] walls = g.getMaze();
 		//g.showMaze();
@@ -392,7 +392,8 @@ public class Client extends JFrame {
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
-		
+
+		currentPanel.requestFocus();
 		revalidate();
 		repaint();
 	}
@@ -444,10 +445,7 @@ public class Client extends JFrame {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.START_GAME)) {
-							ObjectInputStream is = new ObjectInputStream(clientSocket.getInputStream());
-							float[][] maze = (float[][])is.readObject();
-							System.out.println(maze[0][0]);
-							
+							startGame(parseMaze(body));
 						}
 						
 					}
@@ -474,5 +472,30 @@ public class Client extends JFrame {
 		}
 		
 	}
-	
+
+	private static float[][] parseMaze(String maze) {
+
+		int row = 0;
+		int column = 0;
+
+		float[][] arr = new float[MazeGenerator.HEIGHT][MazeGenerator.WIDTH];
+
+		for (int i = 0; i < maze.length(); i++) {
+			char cell = maze.charAt(i);
+			if (cell == '1') {
+				System.out.println(row);
+				System.out.println(column);
+				arr[row][column] = 1.0f;
+				column++;
+			} else if (cell == '0') {
+				arr[row][column] = 0.0f;
+				column++;
+			} else if (cell == 'l') {
+				row++;
+				column = 0;
+			}
+		}
+
+		return arr;
+	}
 }
