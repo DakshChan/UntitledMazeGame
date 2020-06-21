@@ -101,7 +101,7 @@ public class Client extends JFrame {
 		int playerDir; //0 Up, 1 Right, 2 Down, 3 Left
 		
 		int mapPosOffsetX;
-		int getMapPosOffsetY;
+		int mapPosOffsetY;
 		
 		private boolean[][] walls;
 		private int[][] lighting;
@@ -114,6 +114,10 @@ public class Client extends JFrame {
 		private BufferedImage IMGPlayer;
 		
 		private long lastMoveTime;
+		
+		final int moveDelayMillis = 100;
+		final int moveTolerance = 2;
+		final int visibleTiles = 12;
 		
 		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
@@ -138,6 +142,9 @@ public class Client extends JFrame {
 			
 			playerX = playerSpawnX;
 			playerY = playerSpawnY;
+			
+			mapPosOffsetX = playerSpawnX;
+			mapPosOffsetY = playerSpawnY;
 
 			lighting = new int[mapSizeX][mapSizeY];
 			updateLighting();
@@ -299,17 +306,41 @@ public class Client extends JFrame {
 			//Gets rid of the 2d graphics
 			map2d.dispose();
 			
+			
+			
+			//Replace with a properly scaled version based on player Pos
+			//Instead of filling it to screen
+			
+			if (playerX - mapPosOffsetX > moveTolerance) {
+				mapPosOffsetX ++;
+			} else if (playerX - mapPosOffsetX < -moveTolerance) {
+				mapPosOffsetX --;
+			}
+			if (playerY - mapPosOffsetY > moveTolerance) {
+				mapPosOffsetY++;
+			} else if (mapPosOffsetY - playerY > moveTolerance) {
+				mapPosOffsetY--;
+			}
+			
+			System.out.println(mapPosOffsetX);
+			System.out.println(mapPosOffsetY);
+			
+			BufferedImage bigMap = new BufferedImage((mapSizeX + visibleTiles/2) * 320, (mapSizeY + visibleTiles/2) * 320, 2);
+			Graphics2D bigMap2d = bigMap.createGraphics();
+			bigMap2d.setColor(new Color(0,0,0));
+			bigMap2d.fillRect(0,0,bigMap.getWidth(), bigMap.getHeight());
+			bigMap2d.drawImage(map, visibleTiles/2 * 320, visibleTiles/2*320, map.getWidth(), map.getHeight(), null);
+			bigMap2d.dispose();
+			
+			BufferedImage croppedMap = bigMap.getSubimage(mapPosOffsetX * 320, mapPosOffsetY * 320, visibleTiles*320, visibleTiles*320);
+			
 			int small = 0;
 			if (this.getWidth() < this.getHeight()) {
 				small = this.getWidth();
 			} else {
 				small = this.getHeight();
 			}
-			
-			//Replace with a properly scaled version based on player Pos
-			//Instead of filling it to screen
-			
-			g2.drawImage(map,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
+			g2.drawImage(croppedMap,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
 		
 		private void updateLighting() {
@@ -365,7 +396,7 @@ public class Client extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
 			
-			if (lastMoveTime + 150 < System.currentTimeMillis()) {
+			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis()) {
 				if (code == 'w') {
 					movePlayerUp();
 				} else if (code == 's') {
