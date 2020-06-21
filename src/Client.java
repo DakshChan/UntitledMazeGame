@@ -361,7 +361,8 @@ public class Client extends JFrame {
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
-		
+
+		currentPanel.requestFocus();
 		revalidate();
 		repaint();
 	}
