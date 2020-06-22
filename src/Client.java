@@ -326,7 +326,7 @@ public class Client extends JFrame {
 						Graphics2D temp2d = temp.createGraphics();
 						temp2d.setColor(new Color(0,0,0,0));
 						temp2d.fillRect(0,0,32,32);
-						AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) -(lighting[x][y]/6.0) + 1);
+						AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) -(lighting[x][y]/13.0) + 1);
 						temp2d.setComposite(alcom);
 						temp2d.drawImage(IMGNoise,0,0,null);
 						temp2d.dispose();
