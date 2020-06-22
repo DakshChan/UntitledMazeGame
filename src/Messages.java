@@ -2,6 +2,7 @@ public class Messages {
 	public static final String CONNECTION_ESTABLISHED = "CONNECTION_ESTABLISHED\0";
 	public static final String SET_USERNAME = "USERNAME\0";
 	public static final String JOIN_LOBBY = "JOIN_LOBBY\0";
+	public static final String UPDATE_LOBBY = "UPDATE_LOBBY\0";
 	public static final String START_GAME = "START\0";
 	public static final String MOVED_UP = "MOVED_UP\0";
 	public static final String MOVED_DOWN = "MOVED_DOWN\0";

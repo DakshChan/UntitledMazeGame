@@ -24,7 +24,7 @@ class Server {
 			serverSocket = new ServerSocket(PORT);          //create and bind a socket
 			while(true) {
 				Socket socket = serverSocket.accept();      //wait for connection request
-				clientCounter = clientCounter +1;
+				clientCounter = clientCounter + 1;
 				System.out.println("Client "+clientCounter+" connected");
 				Thread connectionThread = new Thread(new ConnectionHandler(socket));
 				connectionThread.start();                   //start a new thread to handle the connection
@@ -66,15 +66,18 @@ class Server {
 						String body = msg.split("\0")[1];
 						String lobbyId = msg.split("\0")[2];
 						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME) {
-							/*if (clientCounter == 1) { // make a new lobby
+							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
-								System.out.println(lobbies.size());
-							}*/
+							}
 							// add the last player before starting the game
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
+							//lobby.names.add(body);
+							/*String namesStr = "\\";
+							for (String name : lobby.names) {
+								namesStr += name + "\\";
+							}*/
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
-							System.out.println("sent lobby id");
 							output.flush();
 							MazeGenerator mazeGenerator = new MazeGenerator();
 							String maze = parseMaze(mazeGenerator.maze);
@@ -91,8 +94,18 @@ class Server {
 							}
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
-							System.out.println("sent lobby id");
+							lobby.names.add(body);
+							String namesStr = "";
+							for (String name : lobby.names) {
+								namesStr += name + "\t";
+							}
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
+
+							for (int i = 0; i < lobby.names.size(); i++) {
+								lobby.playerSockets[i].output.println(Messages.UPDATE_LOBBY + namesStr);
+								lobby.playerSockets[i].output.flush();
+							}
+
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {

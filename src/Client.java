@@ -8,6 +8,8 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Client extends JFrame {
 
@@ -76,7 +78,7 @@ public class Client extends JFrame {
 
 					//startGame(connection.maze);
 					System.out.println("lobby");
-					showLobby();
+					//showLobby();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
@@ -779,6 +781,10 @@ public class Client extends JFrame {
 		revalidate();
 		repaint();
 	}
+
+	void updateLobby(ArrayList<String> names) {
+
+	}
 	
 	void showMenu() {
 		remove(currentPanel);
@@ -834,8 +840,9 @@ public class Client extends JFrame {
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
 							clientId = Integer.parseInt(body);
 						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
-
 							lobbyId = body;
+						} else if (Messages.compareHeaders(header, Messages.UPDATE_LOBBY)) {
+							updateLobby(parseNames(body));
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
@@ -855,7 +862,7 @@ public class Client extends JFrame {
 						}
 						
 					}
-				}catch (IndexOutOfBoundsException e) {
+				} catch (IndexOutOfBoundsException e) {
 					System.out.println("Failed to receive message from the server.");
 					e.printStackTrace();
 					System.exit(1);
@@ -880,6 +887,10 @@ public class Client extends JFrame {
 			output.flush();
 		}
 		
+	}
+
+	private static ArrayList<String> parseNames(String names) {
+		return new ArrayList<>(Arrays.asList(names.split("\t")));
 	}
 
 	private static float[][] parseMaze(String maze) {
