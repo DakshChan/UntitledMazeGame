@@ -396,6 +396,9 @@ public class Client extends JFrame {
 							}
 						}
 					}
+					if (objects[x][y] == 2) {
+						map2d.drawImage(IMGOrb, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
+					}
 				}
 			}
 
