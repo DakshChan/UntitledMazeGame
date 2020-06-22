@@ -73,12 +73,14 @@ public class Client extends JFrame {
 					connection.sendMsg(Messages.SET_USERNAME + username);
 
 					//startGame(connection.maze);
+					System.out.println("lobby");
+					showLobby();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
 					System.out.println("instruct");
 
-					showInstructions();
+					//showInstructions();
 				}
 			}
 		}
@@ -495,8 +497,47 @@ public class Client extends JFrame {
 			repaint();
 		}
 	}
-	
-	class InstructionPanel extends JPanel implements MouseListener {
+
+		class LobbyPanel extends JPanel implements MouseListener {
+			BufferedImage backdrop;
+
+			LobbyPanel() {
+				try {
+					backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+				}
+				this.addMouseListener(this);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+		}
+
+		class InstructionPanel extends JPanel implements MouseListener {
 		BufferedImage backdrop;
 		
 		InstructionPanel() {
@@ -568,6 +609,16 @@ public class Client extends JFrame {
 	void showInstructions() {
 		remove(currentPanel);
 		currentPanel = new InstructionPanel();
+		add(currentPanel);
+		currentPanel.requestFocus();
+
+		revalidate();
+		repaint();
+	}
+
+	void showLobby() {
+		remove(currentPanel);
+		currentPanel = new LobbyPanel();
 		add(currentPanel);
 		currentPanel.requestFocus();
 
