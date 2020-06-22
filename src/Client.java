@@ -176,9 +176,9 @@ public class Client extends JFrame {
 			boolean up;
 			boolean down;
 			
-			int playerX = entityPos[clientId][0];
-			int playerY = entityPos[clientId][1];
-			int playerDirection = entityPos[clientId][3];
+			int playerX = entityPos[clientId - 1][0];
+			int playerY = entityPos[clientId - 1][1];
+			int playerDirection = entityPos[clientId - 1][2];
 			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
