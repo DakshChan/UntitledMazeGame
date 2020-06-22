@@ -16,7 +16,6 @@ public class Client extends JFrame {
 	Connection connection;
 
 	int clientId;
-	String lobbyId;
 
 	Client() {
 
@@ -72,7 +71,7 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
-					connection.sendMsg(Messages.SET_USERNAME, username, lobbyId);
+					connection.sendMsg(Messages.SET_USERNAME + username);
 
 					//startGame(connection.maze);
 					System.out.println("lobby");
@@ -128,13 +127,10 @@ public class Client extends JFrame {
 		final int moveDelayMillis = 100;
 		final int moveTolerance = 2;
 		final int visibleTiles = 12;
-
-		private boolean movementEnabled;
-
-		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
+		
+		GamePanel(int[][] objects, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
-			movementEnabled = true;
 			
 			try{
 				IMGWallConnect = ImageIO.read(new File("assets/connector.png"));
@@ -160,6 +156,7 @@ public class Client extends JFrame {
 			mapPosOffsetY = playerSpawnY;
 
 			for (int i = 0; i < Lobby.PLAYERS_PER_GAME; i++) {
+				System.out.println("filled shit up");
 				entityPos[i][0] = playerSpawnX;
 				entityPos[i][1] = playerSpawnY;
 				entityPos[i][1] = 1;
@@ -181,7 +178,6 @@ public class Client extends JFrame {
 			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
-					
 					map2d.drawImage(IMGFloor, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
 					if (objects[x][y] == 1) {
 						left = false;
@@ -287,7 +283,122 @@ public class Client extends JFrame {
 					}
 				}
 			}
+
 			map2d.dispose();
+		}
+
+		protected void refreshMaps() {
+			Graphics2D map2d = map.createGraphics();
+			boolean left;
+			boolean right;
+			boolean up;
+			boolean down;
+
+			for (int x = 0; x < mapSizeX; x++) {
+				for (int y = 0; y < mapSizeY; y++) {
+					map2d.drawImage(IMGFloor, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+					if (objects[x][y] == 1) {
+						left = false;
+						right = false;
+						up = false;
+						down = false;
+
+						if (x > 0 && x < mapSizeX - 1) {
+							if (objects[x - 1][y] == 1) {
+								left = true;
+							}
+							if (objects[x + 1][y] == 1) {
+								right = true;
+							}
+						} else if (x == 0) {
+							left = false;
+							if (objects[x + 1][y] == 1) {
+								right = true;
+							}
+						} else {
+							right = false;
+							if (objects[x - 1][y] == 1) {
+								left = true;
+							}
+						}
+						if (y > 0 && y < mapSizeY - 1) {
+							if (objects[x][y - 1] == 1) {
+								up = true;
+							}
+							if (objects[x][y + 1] == 1) {
+								down = true;
+							}
+						} else if (y == 0) {
+							up = false;
+							if (objects[x][y + 1] == 1) {
+								down = true;
+							}
+						} else {
+							down = false;
+							if (objects[x][y - 1] == 1) {
+								up = true;
+							}
+						}
+
+						if ((up && down) && !(left || right)) {
+							map2d.drawImage(IMGWallStraight, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+						} else if ((left && right) && !(down || up)) {
+							BufferedImage temp = new BufferedImage(32, 32, 2);
+
+							Graphics2D temp2d = temp.createGraphics();
+							temp2d.setColor(new Color(0, 0, 0, 0));
+							temp2d.fillRect(0, 0, 32, 32);
+							temp2d.rotate(Math.PI / 2, 32 / 2, 32 / 2);
+							temp2d.drawImage(IMGWallStraight, 0, 0, null);
+							temp2d.dispose();
+
+							map2d.drawImage(temp, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+						} else {
+							map2d.drawImage(IMGWallNub, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+							if (up) {
+								map2d.drawImage(IMGWallConnect, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+							}
+							if (down) {
+								BufferedImage temp = new BufferedImage(32, 32, 2);
+
+								Graphics2D temp2d = temp.createGraphics();
+								temp2d.setColor(new Color(0, 0, 0, 0));
+								temp2d.fillRect(0, 0, 32, 32);
+								temp2d.rotate(Math.PI, 32 / 2, 32 / 2);
+								temp2d.drawImage(IMGWallConnect, 0, 0, null);
+								temp2d.dispose();
+
+								map2d.drawImage(temp, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+							}
+							if (left) {
+								BufferedImage temp = new BufferedImage(32, 32, 2);
+
+								Graphics2D temp2d = temp.createGraphics();
+								temp2d.setColor(new Color(0, 0, 0, 0));
+								temp2d.fillRect(0, 0, 32, 32);
+								temp2d.rotate(3 * Math.PI / 2, 32 / 2, 32 / 2);
+								temp2d.drawImage(IMGWallConnect, 0, 0, null);
+								temp2d.dispose();
+
+								map2d.drawImage(temp, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+							}
+							if (right) {
+								BufferedImage temp = new BufferedImage(32, 32, 2);
+
+								Graphics2D temp2d = temp.createGraphics();
+								temp2d.setColor(new Color(0, 0, 0, 0));
+								temp2d.fillRect(0, 0, 32, 32);
+								temp2d.rotate(Math.PI / 2, 32 / 2, 32 / 2);
+								temp2d.drawImage(IMGWallConnect, 0, 0, null);
+								temp2d.dispose();
+
+								map2d.drawImage(temp, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+							}
+						}
+					}
+				}
+			}
+
 		}
 
 		@Override
@@ -366,8 +477,8 @@ public class Client extends JFrame {
 				mapPosOffsetY--;
 			}
 			
-			//System.out.println(mapPosOffsetX);
-			//System.out.println(mapPosOffsetY);
+			System.out.println(mapPosOffsetX);
+			System.out.println(mapPosOffsetY);
 			
 //			BufferedImage bigMap = new BufferedImage((mapSizeX + visibleTiles/2) * 32, (mapSizeY + visibleTiles/2) * 32, 2);
 //			Graphics2D bigMap2d = bigMap.createGraphics();
@@ -441,15 +552,19 @@ public class Client extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
 			
-			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis() && movementEnabled) {
+			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis()) {
 				if (code == 'w') {
-					connection.sendMsg(Messages.MOVED_UP, Integer.toString(clientId), lobbyId);
+					connection.sendMsg(Messages.MOVED_UP + clientId);
+					//movePlayerUp();
 				} else if (code == 's') {
-					connection.sendMsg(Messages.MOVED_DOWN, Integer.toString(clientId), lobbyId);
+					connection.sendMsg(Messages.MOVED_DOWN + clientId);
+					//movePlayerDown();
 				} else if (code == 'a') {
-					connection.sendMsg(Messages.MOVED_LEFT, Integer.toString(clientId), lobbyId);
+					connection.sendMsg(Messages.MOVED_LEFT + clientId);
+					//movePlayerLeft();
 				} else if (code == 'd') {
-					connection.sendMsg(Messages.MOVED_RIGHT, Integer.toString(clientId), lobbyId);
+					connection.sendMsg(Messages.MOVED_RIGHT + clientId);
+					//movePlayerRight();
 				}
 			}
 
@@ -461,7 +576,8 @@ public class Client extends JFrame {
 		public void keyReleased(KeyEvent e) {}
 
 		private void movePlayerLeft(int id) {
-			if (walls[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != true) {
+			System.out.println("left");
+			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -470,10 +586,6 @@ public class Client extends JFrame {
 
 			entityPos[id - 1][2] = 3;
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
-				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
-			}
 		}
 
 		private void movePlayerRight(int id) {
@@ -482,21 +594,18 @@ public class Client extends JFrame {
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
 			}
+
 			entityPos[id - 1][2] = 1;
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
-				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
-			}
+
 		}
 
 		private void movePlayerDown(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
-					System.out.println("TYPE: " + objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1]);
 					points += 100;
 					objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] = 0;
-					System.out.println("TYPE: " + objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1]);
+					refreshMaps();
 				}
 				entityPos[id - 1][1] += 1;
 				updateLighting();
@@ -505,10 +614,6 @@ public class Client extends JFrame {
 			entityPos[id - 1][2] = 2;
 
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
-				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
-			}
 		}
 
 		private void movePlayerUp(int id) {
@@ -519,16 +624,7 @@ public class Client extends JFrame {
 			}
 			entityPos[id - 1][2] = 0;
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
-				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
-			}
 		}
-
-		private boolean checkEnd(int x, int y) {
-			return x == MazeGenerator.WIDTH - 3 && y == MazeGenerator.HEIGHT - 4;
-		}
-
 	}
 
 		class LobbyPanel extends JPanel implements MouseListener {
@@ -640,8 +736,6 @@ public class Client extends JFrame {
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
 		currentPanel.requestFocus();
-
-		// start timer
 		
 		revalidate();
 		repaint();
@@ -720,9 +814,6 @@ public class Client extends JFrame {
 						System.out.println(header);
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
 							clientId = Integer.parseInt(body);
-						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
-
-							lobbyId = body;
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
@@ -737,8 +828,6 @@ public class Client extends JFrame {
 						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
 							int id = Integer.parseInt(body);
 							gamePanel.movePlayerRight(id);
-						} else if (Messages.compareHeaders(header, Messages.END_GAME)) {
-
 						}
 						
 					}
@@ -762,8 +851,8 @@ public class Client extends JFrame {
 		
 		}
 		
-		public void sendMsg(String header, String body, String lobbyId) {
-			output.println(header + body + "\0" + lobbyId);
+		public void sendMsg(String msg) {
+			output.println(msg);
 			output.flush();
 		}
 		
