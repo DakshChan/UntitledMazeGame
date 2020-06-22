@@ -125,6 +125,30 @@ class Server {
 								lobby.playerSockets[i].output.flush();
 							}
 
+						} else if (Messages.compareHeaders(header, Messages.LEFT_LOBBY)) {
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
+							lobby.names.remove(Integer.parseInt(body) - 1);
+							clientCounter--;
+
+							ConnectionHandler[] newArr = new ConnectionHandler[Lobby.PLAYERS_PER_GAME];
+							for (int i = 0; i < lobby.playerSockets.length; i++) {
+								if (i < Integer.parseInt(body) - 1) {
+									newArr[i] = lobby.playerSockets[i];
+								} else if (i > Integer.parseInt(body) - 1) {
+									newArr[i - 1] = lobby.playerSockets[i];
+								}
+							}
+							lobby.playerSockets = newArr;
+
+							String namesStr = "";
+							for (String name : lobby.names) {
+								namesStr += name + "\t";
+							}
+							for (int i = 0; i < lobby.names.size(); i++) {
+								lobby.playerSockets[i].output.println(Messages.UPDATE_LOBBY + namesStr);
+								lobby.playerSockets[i].output.flush();
+							}
+
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {

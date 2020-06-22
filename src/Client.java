@@ -610,7 +610,7 @@ public class Client extends JFrame {
 		public void mouseReleased(MouseEvent e) {
 			if (e.getX() >= (10/960.0) * this.getWidth() && e.getX() <= (300/960.0) * this.getWidth()) {
 				if (e.getY() >= (380/540.0) * this.getHeight() && e.getY() <= (435/540.0) * this.getHeight()) {
-					//Send message to server here
+					connection.sendMsg(Messages.LEFT_LOBBY, Integer.toString(clientId), lobbyId);
 					
 					showMenu();
 				}
