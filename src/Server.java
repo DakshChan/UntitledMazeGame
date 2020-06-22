@@ -149,6 +149,16 @@ class Server {
 								lobby.playerSockets[i].output.println(Messages.MOVED_RIGHT + body);
 								lobby.playerSockets[i].output.flush();
 							}
+						} else if (Messages.compareHeaders(header, Messages.FINISHED_MAZE)) {
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
+							lobby.hasCompleted[Integer.parseInt(body) - 1] = true;
+							if (everyoneHasEnded(lobby.hasCompleted)) {
+								for (int i = 0; i < lobby.playerSockets.length; i++) {
+									lobby.playerSockets[i].output.println(Messages.END_GAME + "scores");
+									lobby.playerSockets[i].output.flush();
+								}
+							}
+
 						}
 					}
 				} catch (IOException e) {
@@ -159,6 +169,14 @@ class Server {
 			}
 
 		}
+	}
+
+	private static boolean everyoneHasEnded(boolean[] hasCompleted) {
+		for (int i = 0; i < hasCompleted.length; i++) {
+			if (!hasCompleted[i])
+				return false;
+		}
+		return true;
 	}
 
 	private static String parseMaze(float[][] maze) {

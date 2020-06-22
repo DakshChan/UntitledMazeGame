@@ -126,7 +126,8 @@ public class Client extends JFrame {
 		private BufferedImage map;
 		
 		private long lastMoveTime;
-		
+		private boolean movementEnabled;
+
 		final int moveDelayMillis = 100;
 		final int moveTolerance = 2;
 		final int visibleTiles = 12;
@@ -134,7 +135,8 @@ public class Client extends JFrame {
 		GamePanel(int[][] objects, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
-			
+			movementEnabled = true;
+
 			try{
 				IMGWallConnect = ImageIO.read(new File("assets/connector.png"));
 				IMGWallStraight = ImageIO.read(new File("assets/wall.png"));
@@ -439,7 +441,7 @@ public class Client extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
 			
-			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis()) {
+			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis() && movementEnabled) {
 				if (code == 'w') {
 					connection.sendMsg(Messages.MOVED_UP, Integer.toString(clientId), lobbyId);
 				} else if (code == 's') {
@@ -473,6 +475,11 @@ public class Client extends JFrame {
 
 			entityPos[id - 1][2] = 3;
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+			}
 		}
 
 		private void movePlayerRight(int id) {
@@ -488,7 +495,11 @@ public class Client extends JFrame {
 
 			entityPos[id - 1][2] = 1;
 			repaint();
-
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+			}
 		}
 
 		private void movePlayerDown(int id) {
@@ -504,6 +515,11 @@ public class Client extends JFrame {
 			entityPos[id - 1][2] = 2;
 
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+			}
 		}
 
 		private void movePlayerUp(int id) {
@@ -518,6 +534,11 @@ public class Client extends JFrame {
 			}
 			entityPos[id - 1][2] = 0;
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+			}
 		}
 
 		private boolean checkEnd(int x, int y) {
