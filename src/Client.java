@@ -295,11 +295,15 @@ public class Client extends JFrame {
 			BufferedImage mapClone = new BufferedImage(map.getWidth(), map.getHeight(), 2);
 			Graphics2D map2d = mapClone.createGraphics();
 			map2d.drawImage(map, 0,0,map.getWidth(),map.getHeight(),null);
-			
-			boolean left;
-			boolean right;
-			boolean up;
-			boolean down;
+		
+			//Renders items and other changing entities
+			for (int x = 0; x < mapSizeX; x++) {
+				for (int y = 0; y < mapSizeY; y++) {
+					if (objects[x][y] == 2) {
+						map2d.drawImage(IMGOrb, x * 32 + (int) (visibleTiles / 2.0 * 32), y * 32 + (int) (visibleTiles / 2.0 * 32), null);
+					}
+				}
+			}
 			
 			int playerX = entityPos[clientId - 1][0];
 			int playerY = entityPos[clientId - 1][1];
@@ -314,6 +318,14 @@ public class Client extends JFrame {
 				temp2d.setColor(new Color(0,0,0,0));
 				temp2d.fillRect(0,0,32,32);
 				temp2d.rotate(Math.PI/2 * entityPos[i][2], 32/2,32/2);
+				float alpha;
+				if (i == clientId-1) {
+					alpha = 1.0f;
+				} else {
+					alpha = 0.5f;
+				}
+				AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+				temp2d.setComposite(alcom);
 				temp2d.drawImage(IMGPlayer,0,0,null);
 				temp2d.dispose();
 				
@@ -323,9 +335,6 @@ public class Client extends JFrame {
 			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
-					if (objects[x][y] == 2) {
-						map2d.drawImage(IMGOrb, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
-					}
 					if (lighting[x][y] > 0) {
 						//Apply Lighting
 						//IMGNoise should be turned more translucent the higher the light
@@ -364,16 +373,6 @@ public class Client extends JFrame {
 			} else if (mapPosOffsetY - playerY > moveTolerance) {
 				mapPosOffsetY--;
 			}
-			
-			//System.out.println(mapPosOffsetX);
-			//System.out.println(mapPosOffsetY);
-			
-//			BufferedImage bigMap = new BufferedImage((mapSizeX + visibleTiles/2) * 32, (mapSizeY + visibleTiles/2) * 32, 2);
-//			Graphics2D bigMap2d = bigMap.createGraphics();
-//			bigMap2d.setColor(new Color(0,0,0));
-//			bigMap2d.fillRect(0,0,bigMap.getWidth(), bigMap.getHeight());
-//			bigMap2d.drawImage(map, visibleTiles/2 * 32, visibleTiles/2*32, map.getWidth(), map.getHeight(), null);
-//			bigMap2d.dispose();
 			
 			BufferedImage croppedMap = mapClone.getSubimage(mapPosOffsetX * 32, mapPosOffsetY * 32, visibleTiles*32, visibleTiles*32);
 			
