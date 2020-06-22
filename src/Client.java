@@ -648,104 +648,114 @@ public class Client extends JFrame {
 
 	}
 
-		class LobbyPanel extends JPanel implements MouseListener {
-			BufferedImage backdrop;
-
-			LobbyPanel() {
-				try {
-					backdrop = ImageIO.read(new File("assets/UMG - Lobby.png"));
-				} catch (IOException e) {
-					e.printStackTrace();
-					backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
-				}
-				this.addMouseListener(this);
-			}
-
-			@Override
-			protected void paintComponent(Graphics g) {
-				g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-
-			}
-		}
-
-		class InstructionPanel extends JPanel implements MouseListener {
+	class LobbyPanel extends JPanel implements MouseListener {
 		BufferedImage backdrop;
+		ArrayList<String> names;
 		
-		InstructionPanel() {
+		LobbyPanel(ArrayList<String> names) {
+			this.names = names;
 			try {
-				backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
+				backdrop = ImageIO.read(new File("assets/UMG - Lobby.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 				backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
 			}
 			this.addMouseListener(this);
 		}
-		
+
 		@Override
 		protected void paintComponent(Graphics g) {
 			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
-			
-		}
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {
-		
-		}
-		
-		@Override
-		public void mousePressed(MouseEvent e) {
-		
-		}
-		
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			System.out.println(e.getX() +" "+ e.getY());
-			
-			//960 , 540
-			if (e.getX() >= (340/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
-				if (e.getY() >= (420/540.0) * this.getHeight() && e.getY() <= (480/540.0) * this.getHeight()) {
-					showMenu();
-				}
+			for (int i = 0; i < names.size(); i++) {
+				g.setColor(Color.WHITE);
+				g.setFont(new Font("Arial", Font.BOLD, (int) ((30/540.0) * this.getHeight())));
+				int offsetX = (int) g.getFontMetrics().getStringBounds(names.get(i), g).getWidth()/2;
+				int offsetY = (int) g.getFontMetrics().getStringBounds(names.get(i), g).getHeight()/2;
+				g.fillRoundRect((int) (((480-10)/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i-10)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((20/960.0) * this.getWidth()), (int) (((30)/540.0) * this.getHeight()),10,10);
+				g.setColor(Color.BLACK);
+				g.drawString(names.get(i), (int) ((480/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i)/540.0) * this.getHeight()));
 			}
 		}
-		
-		
-		
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+
+		}
+
 		@Override
 		public void mouseEntered(MouseEvent e) {
-		
+
 		}
-		
+
 		@Override
 		public void mouseExited(MouseEvent e) {
-		
+
 		}
 	}
+
+	class InstructionPanel extends JPanel implements MouseListener {
+	BufferedImage backdrop;
+	
+	InstructionPanel() {
+		try {
+			backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+		}
+		this.addMouseListener(this);
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
+		
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+	
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		System.out.println(e.getX() +" "+ e.getY());
+		
+		//960 , 540
+		if (e.getX() >= (340/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
+			if (e.getY() >= (420/540.0) * this.getHeight() && e.getY() <= (480/540.0) * this.getHeight()) {
+				showMenu();
+			}
+		}
+	}
+	
+	
+	
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	
+	}
+	
+	@Override
+	public void mouseExited(MouseEvent e) {
+	
+	}
+}
 	
 	//This method should take in some variables
 	void startGame(float[][] maze) {
@@ -772,9 +782,9 @@ public class Client extends JFrame {
 		repaint();
 	}
 
-	void showLobby() {
+	void showLobby(ArrayList<String> names) {
 		remove(currentPanel);
-		currentPanel = new LobbyPanel();
+		currentPanel = new LobbyPanel(names);
 		add(currentPanel);
 		currentPanel.requestFocus();
 
@@ -783,7 +793,7 @@ public class Client extends JFrame {
 	}
 
 	void updateLobby(ArrayList<String> names) {
-
+		showLobby(names);
 	}
 	
 	void showMenu() {
@@ -841,6 +851,7 @@ public class Client extends JFrame {
 							clientId = Integer.parseInt(body);
 						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
 							lobbyId = body;
+							showLobby(new ArrayList<String>());
 						} else if (Messages.compareHeaders(header, Messages.UPDATE_LOBBY)) {
 							updateLobby(parseNames(body));
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
