@@ -64,14 +64,17 @@ class Server {
 					if ((msg = input.readLine()) != null) {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
+						String lobbyId = msg.split("\0")[2];
 						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME) {
-							if (clientCounter == 1) { // make a new lobby
+							/*if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
 								System.out.println(lobbies.size());
-							}
+							}*/
 							// add the last player before starting the game
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
+							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
+							output.flush();
 							MazeGenerator mazeGenerator = new MazeGenerator();
 							String maze = parseMaze(mazeGenerator.maze);
 							System.out.println(maze);
@@ -84,30 +87,31 @@ class Server {
 						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < Lobby.PLAYERS_PER_GAME) {
 							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
-								System.out.println(lobbies.size());
 							}
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
+							System.out.println("sent lobby id");
+							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
-							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								lobby.playerSockets[i].output.println(Messages.MOVED_UP + body);
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.MOVED_DOWN)) {
-							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								lobby.playerSockets[i].output.println(Messages.MOVED_DOWN + body);
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.MOVED_LEFT)) {
-							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								lobby.playerSockets[i].output.println(Messages.MOVED_LEFT + body);
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
-							Lobby lobby = lobbies.get(lobbies.size() - 1);
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								lobby.playerSockets[i].output.println(Messages.MOVED_RIGHT + body);
 								lobby.playerSockets[i].output.flush();

@@ -1,5 +1,5 @@
 public class Lobby {
-	public static final int PLAYERS_PER_GAME = 1;
+	public static final int PLAYERS_PER_GAME = 2;
 
 	public Server.ConnectionHandler[] playerSockets;
 
