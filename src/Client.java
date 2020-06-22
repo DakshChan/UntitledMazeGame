@@ -474,49 +474,60 @@ public class Client extends JFrame {
 		}
 	}
 
-	class InstructionPanel extends JPanel {
-		
+	class InstructionPanel extends JPanel implements MouseListener {
+		BufferedImage backdrop;
+
 		InstructionPanel() {
-			this.requestFocus();
+			try {
+				backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+				backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+			}
+			this.addMouseListener(this);
 		}
 
 		@Override
 		protected void paintComponent(Graphics g) {
-			int width = this.getWidth();
-			int height = this.getHeight();
+			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
 
-			// graphics setup
-			Graphics2D g2 = (Graphics2D) g;
-			RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setRenderingHints(renderingHints);
+		}
 
-			// title
-			Font bigFont = new Font("Arial", Font.BOLD, 36);
-			g2.setFont(bigFont);
-			FontMetrics fontMetrics = g2.getFontMetrics();
-			String instructionTitle = "Instructions";
-			int titleStartY = (int)(height * 0.2);
-			g2.drawString(instructionTitle, width/2 - fontMetrics.stringWidth(instructionTitle)/2, titleStartY);
+		@Override
+		public void mouseClicked(MouseEvent e) {
 
-			// body
-			Font bodyFont = new Font("Arial", Font.PLAIN, 18);
-			g2.setFont(bodyFont);
-			fontMetrics = g2.getFontMetrics();
+		}
 
-			String[] instructionTextLines = {
-					"Every player is sent the same maze and must race to find the exit",
-					"Players are ranked by completion time",
-					"The maze is dark but players will have a flashlight to help them see"
-			};
+		@Override
+		public void mousePressed(MouseEvent e) {
 
-			int bodyStartX = (int)(width * 0.25f);
-			int bodyStartY = (int)(height * 0.30f);
+		}
 
-			for (int i = 0; i < instructionTextLines.length; i++) {
-				g2.drawString(instructionTextLines[i], bodyStartX, bodyStartY + (int)(i * fontMetrics.getHeight() * 1.25));
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			System.out.println(e.getX() +" "+ e.getY());
+
+			//960 , 540
+			if (e.getX() >= (340/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
+				if (e.getY() >= (420/540.0) * this.getHeight() && e.getY() <= (480/540.0) * this.getHeight()) {
+					showMenu();
+				}
 			}
 		}
+
+
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+
+		}
 	}
+
 	
 	//This method should take in some variables
 	void startGame(float[][] maze) {
@@ -541,6 +552,17 @@ public class Client extends JFrame {
 
 		revalidate();
 		repaint();
+	}
+
+	void showMenu() {
+		remove(currentPanel);
+		currentPanel = new MainMenuPanel();
+		add(currentPanel);
+		currentPanel.requestFocus();
+
+		revalidate();
+		repaint();
+
 	}
 	
 	class Connection {
