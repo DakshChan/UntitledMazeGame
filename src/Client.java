@@ -107,7 +107,7 @@ public class Client extends JFrame {
 		int mapPosOffsetX;
 		int mapPosOffsetY;
 
-		private int[][] walls;
+		private int[][] objects;
 		private int[][] lighting;
 		
 		private BufferedImage IMGWallConnect;
@@ -116,6 +116,7 @@ public class Client extends JFrame {
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
 		private BufferedImage IMGPlayer;
+		private BufferedImage IMGOrb;
 		
 		private BufferedImage map;
 		
@@ -125,7 +126,7 @@ public class Client extends JFrame {
 		final int moveTolerance = 2;
 		final int visibleTiles = 12;
 		
-		GamePanel(int[][] walls, int playerSpawnX, int playerSpawnY) {
+		GamePanel(int[][] objects, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
 			
@@ -136,15 +137,16 @@ public class Client extends JFrame {
 				IMGFloor = ImageIO.read(new File("assets/path.png"));
 				IMGNoise = ImageIO.read(new File("assets/noise.png"));
 				IMGPlayer = ImageIO.read(new File("assets/player.png"));
+				IMGOrb = ImageIO.read(new File("assets/orb.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 			this.requestFocus();
 			this.setOpaque(true);
-			this.walls = walls;
-			mapSizeX = this.walls.length;
-			mapSizeY = this.walls[0].length;
+			this.objects = objects;
+			mapSizeX = this.objects.length;
+			mapSizeY = this.objects[0].length;
 
 			connection.gamePanel = this;
 			
@@ -176,45 +178,45 @@ public class Client extends JFrame {
 				for (int y = 0; y < mapSizeY; y++) {
 					
 					map2d.drawImage(IMGFloor, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
-					if (walls[x][y] == 1) {
+					if (objects[x][y] == 1) {
 						left = false;
 						right = false;
 						up = false;
 						down = false;
 						
 						if (x > 0 && x < mapSizeX - 1) {
-							if (walls[x - 1][y] == 1) {
+							if (objects[x - 1][y] == 1) {
 								left = true;
 							}
-							if (walls[x + 1][y] == 1) {
+							if (objects[x + 1][y] == 1) {
 								right = true;
 							}
 						} else if (x == 0) {
 							left = false;
-							if (walls[x + 1][y] == 1) {
+							if (objects[x + 1][y] == 1) {
 								right = true;
 							}
 						} else {
 							right = false;
-							if (walls[x - 1][y] == 1) {
+							if (objects[x - 1][y] == 1) {
 								left = true;
 							}
 						}
 						if (y > 0 && y < mapSizeY - 1) {
-							if (walls[x][y - 1] == 1) {
+							if (objects[x][y - 1] == 1) {
 								up = true;
 							}
-							if (walls[x][y + 1] == 1) {
+							if (objects[x][y + 1] == 1) {
 								down = true;
 							}
 						} else if (y == 0) {
 							up = false;
-							if (walls[x][y + 1] == 1) {
+							if (objects[x][y + 1] == 1) {
 								down = true;
 							}
 						} else {
 							down = false;
-							if (walls[x][y - 1] == 1) {
+							if (objects[x][y - 1] == 1) {
 								up = true;
 							}
 						}
@@ -274,6 +276,9 @@ public class Client extends JFrame {
 								map2d.drawImage(temp, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
 							}
 						}
+					}
+					if (objects[x][y] == 2) {
+						map2d.drawImage(IMGOrb, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
 					}
 				}
 			}
@@ -395,7 +400,7 @@ public class Client extends JFrame {
 				return;
 			}
 			lighting[x][y] = lightLevel;
-			if (walls[x][y] == 1) {
+			if (objects[x][y] == 1) {
 				return;
 			}
 			if (x > 0) {
@@ -456,7 +461,7 @@ public class Client extends JFrame {
 
 		private void movePlayerLeft(int id) {
 			System.out.println("left");
-			if (walls[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
+			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -466,7 +471,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerRight(int id) {
-			if (walls[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
+			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -476,7 +481,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerDown(int id) {
-			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				entityPos[id - 1][1] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -486,7 +491,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerUp(int id) {
-			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				entityPos[id - 1][1] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
