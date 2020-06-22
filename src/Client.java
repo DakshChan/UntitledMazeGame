@@ -68,7 +68,6 @@ public class Client extends JFrame {
 		
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			System.out.println(e.getX() +" "+ e.getY());
 			//960 , 540
 			if (e.getX() >= (320/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
 				if (e.getY() >= (280/540.0) * this.getHeight() && e.getY() <= (340/540.0) * this.getHeight()) {
@@ -78,12 +77,10 @@ public class Client extends JFrame {
 					connection.sendMsg(Messages.SET_USERNAME, username, lobbyId);
 
 					//startGame(connection.maze);
-					System.out.println("lobby");
 					//showLobby();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
-					//INSTRUCT
-					System.out.println("instruct");
+					//INSTRUCTIONS
 					showInstructions();
 				}
 			}
@@ -462,7 +459,6 @@ public class Client extends JFrame {
 		public void keyReleased(KeyEvent e) {}
 
 		private void movePlayerLeft(int id) {
-			System.out.println("left");
 			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
 					points += 100;
@@ -571,10 +567,10 @@ public class Client extends JFrame {
 			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Lobby", g).getWidth()/2;
 			int offsetY = (int) g.getFontMetrics().getStringBounds("Back to Lobby", g).getHeight();
 			g.fillRoundRect((int) (((150-10)/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((40/960.0) * this.getWidth()), (int) (((60)/540.0) * this.getHeight()),20,20);
-			System.out.println((int) (((150-10)/960.0) * this.getWidth()) - offsetX);
-			System.out.println((int) (((450)/540.0) * this.getHeight()) - offsetY);
-			System.out.println(offsetX*2 + (int) ((40/960.0) * this.getWidth()));
-			System.out.println( (int) (((60)/540.0) * this.getHeight()));
+//			System.out.println((int) (((150-10)/960.0) * this.getWidth()) - offsetX);
+//			System.out.println((int) (((450)/540.0) * this.getHeight()) - offsetY);
+//			System.out.println(offsetX*2 + (int) ((40/960.0) * this.getWidth()));
+//			System.out.println( (int) (((60)/540.0) * this.getHeight()));
 			
 			g.setColor(Color.BLACK);
 			g.drawString("Back to Lobby", (int) ((150/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()));
@@ -660,8 +656,6 @@ public class Client extends JFrame {
 	
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		System.out.println(e.getX() +" "+ e.getY());
-		
 		//960 , 540
 		if (e.getX() >= (340/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
 			if (e.getY() >= (420/540.0) * this.getHeight() && e.getY() <= (480/540.0) * this.getHeight()) {
@@ -687,7 +681,6 @@ public class Client extends JFrame {
 	void startGame(float[][] maze) {
 		MazeGenerator g = new MazeGenerator(maze);
 		int[][] walls = g.getMaze();
-		g.showMaze();
 		
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
@@ -762,17 +755,13 @@ public class Client extends JFrame {
 			}
 			System.out.println("Connection to server established!");
 			
-			//output.println("Hi. I am a basic client!");         //send a message to the server
-			//output.flush();                                     //flush the output stream to make sure the message
-			//was sent but not kept in the buffer (very important!)
-			//wait for response from the server
 			while(running){
 				try {
 					if (input.ready()) {
 						String msg = input.readLine();
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
-						System.out.println(header);
+						//System.out.println(header);
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
 							clientId = Integer.parseInt(body);
 						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
