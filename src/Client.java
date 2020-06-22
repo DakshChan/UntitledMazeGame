@@ -565,11 +565,24 @@ public class Client extends JFrame {
 		@Override
 		protected void paintComponent(Graphics g) {
 			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Arial", Font.BOLD, (int) ((40/540.0) * this.getHeight())));
+			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Lobby", g).getWidth()/2;
+			int offsetY = (int) g.getFontMetrics().getStringBounds("Back to Lobby", g).getHeight();
+			g.fillRoundRect((int) (((150-10)/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((40/960.0) * this.getWidth()), (int) (((60)/540.0) * this.getHeight()),20,20);
+			System.out.println((int) (((150-10)/960.0) * this.getWidth()) - offsetX);
+			System.out.println((int) (((450)/540.0) * this.getHeight()) - offsetY);
+			System.out.println(offsetX*2 + (int) ((40/960.0) * this.getWidth()));
+			System.out.println( (int) (((60)/540.0) * this.getHeight()));
+			
+			g.setColor(Color.BLACK);
+			g.drawString("Back to Lobby", (int) ((150/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()));
+			
 			for (int i = 0; i < names.size(); i++) {
 				g.setColor(Color.WHITE);
 				g.setFont(new Font("Arial", Font.BOLD, (int) ((30/540.0) * this.getHeight())));
-				int offsetX = (int) g.getFontMetrics().getStringBounds(names.get(i), g).getWidth()/2;
-				int offsetY = (int) g.getFontMetrics().getStringBounds(names.get(i), g).getHeight()/2;
+				offsetX = (int) g.getFontMetrics().getStringBounds(names.get(i), g).getWidth()/2;
+				offsetY = (int) g.getFontMetrics().getStringBounds(names.get(i), g).getHeight()/2;
 				g.fillRoundRect((int) (((480-10)/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i-10)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((20/960.0) * this.getWidth()), (int) (((30)/540.0) * this.getHeight()),10,10);
 				g.setColor(Color.BLACK);
 				g.drawString(names.get(i), (int) ((480/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i)/540.0) * this.getHeight()));
@@ -588,7 +601,13 @@ public class Client extends JFrame {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-
+			if (e.getX() >= (10/960.0) * this.getWidth() && e.getX() <= (300/960.0) * this.getWidth()) {
+				if (e.getY() >= (380/540.0) * this.getHeight() && e.getY() <= (435/540.0) * this.getHeight()) {
+					//Send message to server here
+					
+					showMenu();
+				}
+			}
 		}
 
 		@Override
