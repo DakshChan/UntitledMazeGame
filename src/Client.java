@@ -235,7 +235,7 @@ public class Client extends JFrame {
 								Graphics2D temp2d = temp.createGraphics();
 								temp2d.setColor(new Color(0,0,0,0));
 								temp2d.fillRect(0,0,32,32);
-								temp2d.rotate(Math.PI/2 , 160,160);
+								temp2d.rotate(Math.PI/2 , 32/2,32/2);
 								temp2d.drawImage(IMGWallStraight,0,0,null);
 								temp2d.dispose();
 								
@@ -251,7 +251,7 @@ public class Client extends JFrame {
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
 									temp2d.fillRect(0,0,32,32);
-									temp2d.rotate(Math.PI , 160,160);
+									temp2d.rotate(Math.PI , 32/2,32/2);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
@@ -263,7 +263,7 @@ public class Client extends JFrame {
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
 									temp2d.fillRect(0,0,32,32);
-									temp2d.rotate(3 * Math.PI/2, 160,160);
+									temp2d.rotate(3 * Math.PI/2, 32/2,32/2);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
@@ -275,7 +275,7 @@ public class Client extends JFrame {
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
 									temp2d.fillRect(0,0,32,32);
-									temp2d.rotate(Math.PI/2 , 160,160);
+									temp2d.rotate(Math.PI/2 , 32/2,32/2);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
@@ -314,7 +314,7 @@ public class Client extends JFrame {
 				Graphics2D temp2d = temp.createGraphics();
 				temp2d.setColor(new Color(0,0,0,0));
 				temp2d.fillRect(0,0,32,32);
-				temp2d.rotate(Math.PI/2 * entityPos[i][2], 160,160);
+				temp2d.rotate(Math.PI/2 * entityPos[i][2], 32/2,32/2);
 				temp2d.drawImage(IMGPlayer,0,0,null);
 				temp2d.dispose();
 				
