@@ -168,7 +168,7 @@ public class Client extends JFrame {
 			g2.setBackground(Color.BLACK);
 			g2.clearRect(0,0,this.getWidth(),this.getHeight());
 			
-			BufferedImage map = new BufferedImage(mapSizeX * 320, mapSizeY * 320, 2);
+			BufferedImage map = new BufferedImage(mapSizeX * 32, mapSizeY * 32, 2);
 			Graphics2D map2d = map.createGraphics();
 			
 			boolean left;
@@ -183,7 +183,7 @@ public class Client extends JFrame {
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
 					if (lighting[x][y] > 0) {
-						map2d.drawImage(IMGFloor, x * 320, y * 320, null);
+						map2d.drawImage(IMGFloor, x * 32, y * 32, null);
 						if (walls[x][y] == true) {
 							left = false;
 							right = false;
@@ -228,58 +228,58 @@ public class Client extends JFrame {
 							}
 							
 							if ((up && down) && !(left || right)) {
-								map2d.drawImage(IMGWallStraight, x * 320, y * 320, null);
+								map2d.drawImage(IMGWallStraight, x * 32, y * 32, null);
 							} else if ((left && right) && !(down || up)) {
-								BufferedImage temp = new BufferedImage(320,320,2);
+								BufferedImage temp = new BufferedImage(32,32,2);
 								
 								Graphics2D temp2d = temp.createGraphics();
 								temp2d.setColor(new Color(0,0,0,0));
-								temp2d.fillRect(0,0,320,320);
+								temp2d.fillRect(0,0,32,32);
 								temp2d.rotate(Math.PI/2 , 160,160);
 								temp2d.drawImage(IMGWallStraight,0,0,null);
 								temp2d.dispose();
 								
-								map2d.drawImage(temp, x * 320, y * 320, null);
+								map2d.drawImage(temp, x * 32, y * 32, null);
 							} else {
-								map2d.drawImage(IMGWallNub,x * 320,y * 320,null);
+								map2d.drawImage(IMGWallNub,x * 32,y * 32,null);
 								if (up) {
-									map2d.drawImage(IMGWallConnect, x * 320, y * 320, null);
+									map2d.drawImage(IMGWallConnect, x * 32, y * 32, null);
 								}
 								if (down) {
-									BufferedImage temp = new BufferedImage(320,320,2);
+									BufferedImage temp = new BufferedImage(32,32,2);
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,320,320);
+									temp2d.fillRect(0,0,32,32);
 									temp2d.rotate(Math.PI , 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
-									map2d.drawImage(temp, x * 320, y * 320, null);
+									map2d.drawImage(temp, x * 32, y * 32, null);
 								}
 								if (left) {
-									BufferedImage temp = new BufferedImage(320,320,2);
+									BufferedImage temp = new BufferedImage(32,32,2);
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,320,320);
+									temp2d.fillRect(0,0,32,32);
 									temp2d.rotate(3 * Math.PI/2, 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
-									map2d.drawImage(temp, x * 320, y * 320, null);
+									map2d.drawImage(temp, x * 32, y * 32, null);
 								}
 								if (right) {
-									BufferedImage temp = new BufferedImage(320,320,2);
+									BufferedImage temp = new BufferedImage(32,32,2);
 									
 									Graphics2D temp2d = temp.createGraphics();
 									temp2d.setColor(new Color(0,0,0,0));
-									temp2d.fillRect(0,0,320,320);
+									temp2d.fillRect(0,0,32,32);
 									temp2d.rotate(Math.PI/2 , 160,160);
 									temp2d.drawImage(IMGWallConnect,0,0,null);
 									temp2d.dispose();
 									
-									map2d.drawImage(temp, x * 320, y * 320, null);
+									map2d.drawImage(temp, x * 32, y * 32, null);
 								}
 							}
 						}
@@ -287,20 +287,20 @@ public class Client extends JFrame {
 						//IMGNoise should be turned more translucent the higher the light
 						//int 5 should be max light or something
 						
-						BufferedImage temp = new BufferedImage(320,320,2);
+						BufferedImage temp = new BufferedImage(32,32,2);
 						Graphics2D temp2d = temp.createGraphics();
 						temp2d.setColor(new Color(0,0,0,0));
-						temp2d.fillRect(0,0,320,320);
+						temp2d.fillRect(0,0,32,32);
 						AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) -(lighting[x][y]/5.0) + 1);
 						temp2d.setComposite(alcom);
 						temp2d.drawImage(IMGNoise,0,0,null);
 						temp2d.dispose();
 						
-						map2d.drawImage(temp, x * 320, y * 320, null);
+						map2d.drawImage(temp, x * 32, y * 32, null);
 						
 					} else {
 						map2d.setPaint(Color.BLACK);
-						map2d.drawRect(x * 320, y * 320, 320,320);
+						map2d.drawRect(x * 32, y * 32, 32,32);
 					}
 				}
 			}
@@ -309,16 +309,16 @@ public class Client extends JFrame {
 			
 
 			for (int i = 0; i < Lobby.PLAYERS_PER_GAME; i++) {
-				BufferedImage temp = new BufferedImage(320,320,2);
+				BufferedImage temp = new BufferedImage(32,32,2);
 				
 				Graphics2D temp2d = temp.createGraphics();
 				temp2d.setColor(new Color(0,0,0,0));
-				temp2d.fillRect(0,0,320,320);
+				temp2d.fillRect(0,0,32,32);
 				temp2d.rotate(Math.PI/2 * entityPos[i][2], 160,160);
 				temp2d.drawImage(IMGPlayer,0,0,null);
 				temp2d.dispose();
 				
-				map2d.drawImage(temp, entityPos[i][0] * 320, entityPos[i][1] * 320,null);
+				map2d.drawImage(temp, entityPos[i][0] * 32, entityPos[i][1] * 32,null);
 			}
 			
 			//Gets rid of the 2d graphics
@@ -343,14 +343,14 @@ public class Client extends JFrame {
 			System.out.println(mapPosOffsetX);
 			System.out.println(mapPosOffsetY);
 			
-			BufferedImage bigMap = new BufferedImage((mapSizeX + visibleTiles/2) * 320, (mapSizeY + visibleTiles/2) * 320, 2);
+			BufferedImage bigMap = new BufferedImage((mapSizeX + visibleTiles/2) * 32, (mapSizeY + visibleTiles/2) * 32, 2);
 			Graphics2D bigMap2d = bigMap.createGraphics();
 			bigMap2d.setColor(new Color(0,0,0));
 			bigMap2d.fillRect(0,0,bigMap.getWidth(), bigMap.getHeight());
-			bigMap2d.drawImage(map, visibleTiles/2 * 320, visibleTiles/2*320, map.getWidth(), map.getHeight(), null);
+			bigMap2d.drawImage(map, visibleTiles/2 * 32, visibleTiles/2*32, map.getWidth(), map.getHeight(), null);
 			bigMap2d.dispose();
 			
-			BufferedImage croppedMap = bigMap.getSubimage(mapPosOffsetX * 320, mapPosOffsetY * 320, visibleTiles*320, visibleTiles*320);
+			BufferedImage croppedMap = bigMap.getSubimage(mapPosOffsetX * 32, mapPosOffsetY * 32, visibleTiles*32, visibleTiles*32);
 			
 			
 			int small = 0;
