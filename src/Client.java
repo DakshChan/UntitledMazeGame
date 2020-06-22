@@ -107,7 +107,7 @@ public class Client extends JFrame {
 		int mapPosOffsetX;
 		int mapPosOffsetY;
 
-		private boolean[][] walls;
+		private int[][] walls;
 		private int[][] lighting;
 		
 		private BufferedImage IMGWallConnect;
@@ -125,7 +125,7 @@ public class Client extends JFrame {
 		final int moveTolerance = 2;
 		final int visibleTiles = 12;
 		
-		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
+		GamePanel(int[][] walls, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
 			
@@ -176,45 +176,45 @@ public class Client extends JFrame {
 				for (int y = 0; y < mapSizeY; y++) {
 					
 					map2d.drawImage(IMGFloor, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
-					if (walls[x][y] == true) {
+					if (walls[x][y] == 1) {
 						left = false;
 						right = false;
 						up = false;
 						down = false;
 						
 						if (x > 0 && x < mapSizeX - 1) {
-							if (walls[x - 1][y] == true) {
+							if (walls[x - 1][y] == 1) {
 								left = true;
 							}
-							if (walls[x + 1][y] == true) {
+							if (walls[x + 1][y] == 1) {
 								right = true;
 							}
 						} else if (x == 0) {
 							left = false;
-							if (walls[x + 1][y] == true) {
+							if (walls[x + 1][y] == 1) {
 								right = true;
 							}
 						} else {
 							right = false;
-							if (walls[x - 1][y] == true) {
+							if (walls[x - 1][y] == 1) {
 								left = true;
 							}
 						}
 						if (y > 0 && y < mapSizeY - 1) {
-							if (walls[x][y - 1] == true) {
+							if (walls[x][y - 1] == 1) {
 								up = true;
 							}
-							if (walls[x][y + 1] == true) {
+							if (walls[x][y + 1] == 1) {
 								down = true;
 							}
 						} else if (y == 0) {
 							up = false;
-							if (walls[x][y + 1] == true) {
+							if (walls[x][y + 1] == 1) {
 								down = true;
 							}
 						} else {
 							down = false;
-							if (walls[x][y - 1] == true) {
+							if (walls[x][y - 1] == 1) {
 								up = true;
 							}
 						}
@@ -395,7 +395,7 @@ public class Client extends JFrame {
 				return;
 			}
 			lighting[x][y] = lightLevel;
-			if (walls[x][y] == true) {
+			if (walls[x][y] == 1) {
 				return;
 			}
 			if (x > 0) {
@@ -456,7 +456,7 @@ public class Client extends JFrame {
 
 		private void movePlayerLeft(int id) {
 			System.out.println("left");
-			if (walls[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != true) {
+			if (walls[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -466,7 +466,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerRight(int id) {
-			if (walls[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != true) {
+			if (walls[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -476,7 +476,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerDown(int id) {
-			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != true) {
+			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				entityPos[id - 1][1] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -486,7 +486,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerUp(int id) {
-			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != true) {
+			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				entityPos[id - 1][1] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -553,7 +553,7 @@ public class Client extends JFrame {
 	//This method should take in some variables
 	void startGame(float[][] maze) {
 		MazeGenerator g = new MazeGenerator(maze);
-		boolean[][] walls = g.getMaze();
+		int[][] walls = g.getMaze();
 		g.showMaze();
 		
 		remove(currentPanel);
@@ -690,6 +690,9 @@ public class Client extends JFrame {
 			} else if (cell == 'l') {
 				row++;
 				column = 0;
+			} else if (cell == '2') {
+				arr[row][column] = 2.0f;
+				column ++;
 			}
 		}
 
