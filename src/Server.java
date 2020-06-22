@@ -136,6 +136,8 @@ class Server {
 			for (int j = 0; j < MazeGenerator.WIDTH; j++) {
 				if (maze[i][j] == 1.0f) {
 					str += "1";
+				} else if (maze[i][j] == 2.0f){
+					str += "2";
 				} else {
 					str += "0";
 				}

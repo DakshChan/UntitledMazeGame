@@ -73,12 +73,13 @@ public class Client extends JFrame {
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
 					connection.sendMsg(Messages.SET_USERNAME, username, lobbyId);
 
-					// show lobby
+					//startGame(connection.maze);
+					System.out.println("lobby");
+					showLobby();
 					
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
 					System.out.println("instruct");
-
 					showInstructions();
 				}
 			}
@@ -108,7 +109,7 @@ public class Client extends JFrame {
 		int mapPosOffsetX;
 		int mapPosOffsetY;
 
-		private boolean[][] walls;
+		private int[][] objects;
 		private int[][] lighting;
 		
 		private BufferedImage IMGWallConnect;
@@ -117,6 +118,7 @@ public class Client extends JFrame {
 		private BufferedImage IMGFloor;
 		private BufferedImage IMGNoise;
 		private BufferedImage IMGPlayer;
+		private BufferedImage IMGOrb;
 		
 		private BufferedImage map;
 		
@@ -140,15 +142,16 @@ public class Client extends JFrame {
 				IMGFloor = ImageIO.read(new File("assets/path.png"));
 				IMGNoise = ImageIO.read(new File("assets/noise.png"));
 				IMGPlayer = ImageIO.read(new File("assets/player.png"));
+				IMGOrb = ImageIO.read(new File("assets/orb.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 			this.requestFocus();
 			this.setOpaque(true);
-			this.walls = walls;
-			mapSizeX = this.walls.length;
-			mapSizeY = this.walls[0].length;
+			this.objects = objects;
+			mapSizeX = this.objects.length;
+			mapSizeY = this.objects[0].length;
 
 			connection.gamePanel = this;
 			
@@ -179,45 +182,45 @@ public class Client extends JFrame {
 				for (int y = 0; y < mapSizeY; y++) {
 					
 					map2d.drawImage(IMGFloor, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
-					if (walls[x][y] == true) {
+					if (objects[x][y] == 1) {
 						left = false;
 						right = false;
 						up = false;
 						down = false;
 						
 						if (x > 0 && x < mapSizeX - 1) {
-							if (walls[x - 1][y] == true) {
+							if (objects[x - 1][y] == 1) {
 								left = true;
 							}
-							if (walls[x + 1][y] == true) {
+							if (objects[x + 1][y] == 1) {
 								right = true;
 							}
 						} else if (x == 0) {
 							left = false;
-							if (walls[x + 1][y] == true) {
+							if (objects[x + 1][y] == 1) {
 								right = true;
 							}
 						} else {
 							right = false;
-							if (walls[x - 1][y] == true) {
+							if (objects[x - 1][y] == 1) {
 								left = true;
 							}
 						}
 						if (y > 0 && y < mapSizeY - 1) {
-							if (walls[x][y - 1] == true) {
+							if (objects[x][y - 1] == 1) {
 								up = true;
 							}
-							if (walls[x][y + 1] == true) {
+							if (objects[x][y + 1] == 1) {
 								down = true;
 							}
 						} else if (y == 0) {
 							up = false;
-							if (walls[x][y + 1] == true) {
+							if (objects[x][y + 1] == 1) {
 								down = true;
 							}
 						} else {
 							down = false;
-							if (walls[x][y - 1] == true) {
+							if (objects[x][y - 1] == 1) {
 								up = true;
 							}
 						}
@@ -277,6 +280,9 @@ public class Client extends JFrame {
 								map2d.drawImage(temp, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
 							}
 						}
+					}
+					if (objects[x][y] == 2) {
+						map2d.drawImage(IMGOrb, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
 					}
 				}
 			}
@@ -398,7 +404,7 @@ public class Client extends JFrame {
 				return;
 			}
 			lighting[x][y] = lightLevel;
-			if (walls[x][y] == true) {
+			if (objects[x][y] == 1) {
 				return;
 			}
 			if (x > 0) {
@@ -468,7 +474,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerRight(int id) {
-			if (walls[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != true) {
+			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -482,7 +488,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerDown(int id) {
-			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != true) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				entityPos[id - 1][1] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -496,7 +502,7 @@ public class Client extends JFrame {
 		}
 
 		private void movePlayerUp(int id) {
-			if (walls[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != true) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				entityPos[id - 1][1] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -514,8 +520,53 @@ public class Client extends JFrame {
 		}
 
 	}
-	
-	class InstructionPanel extends JPanel implements MouseListener {
+
+		class LobbyPanel extends JPanel implements MouseListener {
+			BufferedImage backdrop;
+
+			LobbyPanel() {
+				try {
+					backdrop = ImageIO.read(new File("assets/UMG - Lobby.png"));
+				} catch (IOException e) {
+					e.printStackTrace();
+					backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+				}
+				this.addMouseListener(this);
+			}
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
+
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+		}
+
+		class InstructionPanel extends JPanel implements MouseListener {
 		BufferedImage backdrop;
 		
 		InstructionPanel() {
@@ -572,7 +623,7 @@ public class Client extends JFrame {
 	//This method should take in some variables
 	void startGame(float[][] maze) {
 		MazeGenerator g = new MazeGenerator(maze);
-		boolean[][] walls = g.getMaze();
+		int[][] walls = g.getMaze();
 		g.showMaze();
 		
 		remove(currentPanel);
@@ -589,6 +640,16 @@ public class Client extends JFrame {
 	void showInstructions() {
 		remove(currentPanel);
 		currentPanel = new InstructionPanel();
+		add(currentPanel);
+		currentPanel.requestFocus();
+
+		revalidate();
+		repaint();
+	}
+
+	void showLobby() {
+		remove(currentPanel);
+		currentPanel = new LobbyPanel();
 		add(currentPanel);
 		currentPanel.requestFocus();
 
@@ -716,6 +777,9 @@ public class Client extends JFrame {
 			} else if (cell == 'l') {
 				row++;
 				column = 0;
+			} else if (cell == '2') {
+				arr[row][column] = 2.0f;
+				column ++;
 			}
 		}
 
