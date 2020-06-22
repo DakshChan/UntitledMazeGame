@@ -47,7 +47,19 @@ public class MazeGenerator {
 
 		maze[HEIGHT - 2][WIDTH - 3] = 1.0f;
 
-		maze[2][3] = 2.0f;
+
+		// Generate a random item 4 times
+		for (int i = 0; i<4; i++) {
+			boolean isBlank = false;
+			while (!isBlank) {
+				int randX = 2 + random.nextInt((WIDTH - 4) / 2) * 2;
+				int randY = 2 + random.nextInt((HEIGHT - 4) / 2) * 2;
+				if (maze[randX][randY] == 1.0f) {
+					isBlank = true;
+					maze[randX][randY] = 2.0f;
+				}
+			}
+		}
 
 
 		this.showMaze();

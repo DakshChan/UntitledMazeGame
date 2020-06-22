@@ -574,6 +574,11 @@ public class Client extends JFrame {
 		private void movePlayerLeft(int id) {
 			System.out.println("left");
 			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
+				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
+					points += 100;
+					objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] = 0;
+					refreshMaps();
+				}
 				entityPos[id - 1][0] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -586,6 +591,11 @@ public class Client extends JFrame {
 
 		private void movePlayerRight(int id) {
 			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
+				if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] == 2) {
+					points += 100;
+					objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] = 0;
+					refreshMaps();
+				}
 				entityPos[id - 1][0] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -614,6 +624,11 @@ public class Client extends JFrame {
 
 		private void movePlayerUp(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
+				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] == 2) {
+					points += 100;
+					objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] = 0;
+					refreshMaps();
+				}
 				entityPos[id - 1][1] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
