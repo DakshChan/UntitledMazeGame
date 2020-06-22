@@ -587,6 +587,13 @@ public class Client extends JFrame {
 				g.setColor(Color.BLACK);
 				g.drawString(names.get(i), (int) ((480/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i)/540.0) * this.getHeight()));
 			}
+
+			if (names.size() == Lobby.PLAYERS_PER_GAME) {
+				g.setColor(Color.WHITE);
+				g.setFont(new Font("Arial", Font.BOLD, (int) ((30/540.0) * this.getHeight())));
+				g.drawString("Starting Game in 5 Seconds", 500, 410);
+			}
+
 		}
 
 		@Override
