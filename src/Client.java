@@ -14,14 +14,12 @@ import java.util.Arrays;
 public class Client extends JFrame {
 
 	int points = 0;
+	int clientId;
 	JPanel currentPanel;
 	Connection connection;
-
-	int clientId;
 	String lobbyId;
 
 	Client() {
-
 		currentPanel = new MainMenuPanel();
 		this.add(currentPanel);
 		
@@ -33,7 +31,10 @@ public class Client extends JFrame {
 		
 		connection = new Connection();
 		connection.go();
+	}
 
+	public static void main(String[] args) {
+		Client player = new Client();
 	}
 	
 	class MainMenuPanel extends JPanel implements MouseListener {
