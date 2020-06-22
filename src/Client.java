@@ -10,7 +10,8 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client extends JFrame {
-	
+
+	int points = 0;
 	JPanel currentPanel;
 	Connection connection;
 
@@ -467,6 +468,8 @@ public class Client extends JFrame {
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
 			}
+
+
 			entityPos[id - 1][2] = 3;
 			repaint();
 		}
@@ -483,11 +486,18 @@ public class Client extends JFrame {
 
 		private void movePlayerDown(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
+				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
+					System.out.println("TYPE: " + objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1]);
+					points += 100;
+					objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] = 0;
+					System.out.println("TYPE: " + objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1]);
+				}
 				entityPos[id - 1][1] += 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
 			}
 			entityPos[id - 1][2] = 2;
+
 			repaint();
 		}
 
