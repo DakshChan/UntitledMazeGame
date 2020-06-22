@@ -79,8 +79,7 @@ public class Client extends JFrame {
 				} else if (e.getY() >= (350/540.0) * this.getHeight() && e.getY() <= (415/540.0) * this.getHeight()) {
 					//INSTRUCT
 					System.out.println("instruct");
-
-					//showInstructions();
+					showInstructions();
 				}
 			}
 		}
@@ -508,12 +507,18 @@ public class Client extends JFrame {
 
 			LobbyPanel() {
 				try {
-					backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
+					backdrop = ImageIO.read(new File("assets/UMG - Lobby.png"));
 				} catch (IOException e) {
 					e.printStackTrace();
 					backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
 				}
 				this.addMouseListener(this);
+			}
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
+
 			}
 
 			@Override
