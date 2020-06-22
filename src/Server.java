@@ -83,6 +83,25 @@ class Server {
 							String maze = parseMaze(mazeGenerator.maze);
 							System.out.println(maze);
 							clientCounter = 0;
+
+							lobby.names.add(body);
+							String namesStr = "";
+							for (String name : lobby.names) {
+								namesStr += name + "\t";
+							}
+							for (int i = 0; i < lobby.names.size(); i++) {
+								lobby.playerSockets[i].output.println(Messages.UPDATE_LOBBY + namesStr);
+								lobby.playerSockets[i].output.flush();
+							}
+
+							// delay
+							try {
+								Thread.sleep(5000);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+
+
 							for (int i = 0; i < lobby.playerSockets.length; i++) { // start game
 
 								lobby.playerSockets[i].output.println(Messages.START_GAME + maze);
@@ -134,8 +153,8 @@ class Server {
 					}
 				} catch (IOException e) {
 					System.out.println("Failed to receive message from the client.");
-					System.exit(1);
 					e.printStackTrace();
+					return;
 				}
 			}
 
