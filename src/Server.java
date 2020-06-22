@@ -74,6 +74,7 @@ class Server {
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
+							System.out.println("sent lobby id");
 							output.flush();
 							MazeGenerator mazeGenerator = new MazeGenerator();
 							String maze = parseMaze(mazeGenerator.maze);

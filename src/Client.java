@@ -131,7 +131,9 @@ public class Client extends JFrame {
 
 		private boolean movementEnabled;
 
-		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
+
+
+		GamePanel(int[][] objects, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
 			movementEnabled = true;
@@ -440,7 +442,7 @@ public class Client extends JFrame {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
-			
+
 			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis() && movementEnabled) {
 				if (code == 'w') {
 					connection.sendMsg(Messages.MOVED_UP, Integer.toString(clientId), lobbyId);
@@ -461,7 +463,7 @@ public class Client extends JFrame {
 		public void keyReleased(KeyEvent e) {}
 
 		private void movePlayerLeft(int id) {
-			if (walls[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != true) {
+			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				entityPos[id - 1][0] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -721,8 +723,8 @@ public class Client extends JFrame {
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
 							clientId = Integer.parseInt(body);
 						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
-
 							lobbyId = body;
+							System.out.println("got lobby id");
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
