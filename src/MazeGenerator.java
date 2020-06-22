@@ -47,7 +47,7 @@ public class MazeGenerator {
 
 		maze[HEIGHT - 2][WIDTH - 3] = 1.0f;
 
-		maze[1][3] = 2.0f;
+		maze[2][3] = 2.0f;
 
 
 		this.showMaze();
@@ -111,8 +111,13 @@ public class MazeGenerator {
 		int[][] intMaze = new int[WIDTH -2][HEIGHT-2];
 		for (int i = 1; i < HEIGHT - 1; i++) {
 			for (int j = 1; j < WIDTH - 1; j++) {
-
-				intMaze[i-1][j-1] = (int)maze[i][j];
+				if ((int)maze[i][j] == 1) {
+					intMaze[i-1][j-1] = 0;
+				} else if ((int)maze[i][j] == 0) {
+					intMaze[i-1][j-1] = 1;
+				} else {
+					intMaze[i-1][j-1] = 2;
+				}
 			}
 		}
 		return intMaze;
