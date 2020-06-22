@@ -16,6 +16,7 @@ public class Client extends JFrame {
 	Connection connection;
 
 	int clientId;
+	String lobbyId;
 
 	Client() {
 
@@ -71,7 +72,7 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
-					connection.sendMsg(Messages.SET_USERNAME + username);
+					connection.sendMsg(Messages.SET_USERNAME, username, lobbyId);
 
 					//startGame(connection.maze);
 					System.out.println("lobby");
@@ -127,10 +128,13 @@ public class Client extends JFrame {
 		final int moveDelayMillis = 100;
 		final int moveTolerance = 2;
 		final int visibleTiles = 12;
-		
-		GamePanel(int[][] objects, int playerSpawnX, int playerSpawnY) {
+
+		private boolean movementEnabled;
+
+		GamePanel(boolean[][] walls, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
+			movementEnabled = true;
 			
 			try{
 				IMGWallConnect = ImageIO.read(new File("assets/connector.png"));
@@ -156,7 +160,6 @@ public class Client extends JFrame {
 			mapPosOffsetY = playerSpawnY;
 
 			for (int i = 0; i < Lobby.PLAYERS_PER_GAME; i++) {
-				System.out.println("filled shit up");
 				entityPos[i][0] = playerSpawnX;
 				entityPos[i][1] = playerSpawnY;
 				entityPos[i][1] = 1;
@@ -363,8 +366,8 @@ public class Client extends JFrame {
 				mapPosOffsetY--;
 			}
 			
-			System.out.println(mapPosOffsetX);
-			System.out.println(mapPosOffsetY);
+			//System.out.println(mapPosOffsetX);
+			//System.out.println(mapPosOffsetY);
 			
 //			BufferedImage bigMap = new BufferedImage((mapSizeX + visibleTiles/2) * 32, (mapSizeY + visibleTiles/2) * 32, 2);
 //			Graphics2D bigMap2d = bigMap.createGraphics();
@@ -438,19 +441,15 @@ public class Client extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
 			
-			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis()) {
+			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis() && movementEnabled) {
 				if (code == 'w') {
-					connection.sendMsg(Messages.MOVED_UP + clientId);
-					//movePlayerUp();
+					connection.sendMsg(Messages.MOVED_UP, Integer.toString(clientId), lobbyId);
 				} else if (code == 's') {
-					connection.sendMsg(Messages.MOVED_DOWN + clientId);
-					//movePlayerDown();
+					connection.sendMsg(Messages.MOVED_DOWN, Integer.toString(clientId), lobbyId);
 				} else if (code == 'a') {
-					connection.sendMsg(Messages.MOVED_LEFT + clientId);
-					//movePlayerLeft();
+					connection.sendMsg(Messages.MOVED_LEFT, Integer.toString(clientId), lobbyId);
 				} else if (code == 'd') {
-					connection.sendMsg(Messages.MOVED_RIGHT + clientId);
-					//movePlayerRight();
+					connection.sendMsg(Messages.MOVED_RIGHT, Integer.toString(clientId), lobbyId);
 				}
 			}
 
@@ -462,8 +461,7 @@ public class Client extends JFrame {
 		public void keyReleased(KeyEvent e) {}
 
 		private void movePlayerLeft(int id) {
-			System.out.println("left");
-			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
+			if (walls[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != true) {
 				entityPos[id - 1][0] -= 1;
 				updateLighting();
 				lastMoveTime = System.currentTimeMillis();
@@ -472,6 +470,10 @@ public class Client extends JFrame {
 
 			entityPos[id - 1][2] = 3;
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+			}
 		}
 
 		private void movePlayerRight(int id) {
@@ -482,6 +484,10 @@ public class Client extends JFrame {
 			}
 			entityPos[id - 1][2] = 1;
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+			}
 		}
 
 		private void movePlayerDown(int id) {
@@ -499,6 +505,10 @@ public class Client extends JFrame {
 			entityPos[id - 1][2] = 2;
 
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+			}
 		}
 
 		private void movePlayerUp(int id) {
@@ -509,7 +519,16 @@ public class Client extends JFrame {
 			}
 			entityPos[id - 1][2] = 0;
 			repaint();
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+				movementEnabled = false;
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
+			}
 		}
+
+		private boolean checkEnd(int x, int y) {
+			return x == MazeGenerator.WIDTH - 3 && y == MazeGenerator.HEIGHT - 4;
+		}
+
 	}
 
 		class LobbyPanel extends JPanel implements MouseListener {
@@ -621,6 +640,8 @@ public class Client extends JFrame {
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
 		currentPanel.requestFocus();
+
+		// start timer
 		
 		revalidate();
 		repaint();
@@ -699,6 +720,9 @@ public class Client extends JFrame {
 						System.out.println(header);
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
 							clientId = Integer.parseInt(body);
+						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
+
+							lobbyId = body;
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
@@ -713,6 +737,8 @@ public class Client extends JFrame {
 						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
 							int id = Integer.parseInt(body);
 							gamePanel.movePlayerRight(id);
+						} else if (Messages.compareHeaders(header, Messages.END_GAME)) {
+
 						}
 						
 					}
@@ -736,8 +762,8 @@ public class Client extends JFrame {
 		
 		}
 		
-		public void sendMsg(String msg) {
-			output.println(msg);
+		public void sendMsg(String header, String body, String lobbyId) {
+			output.println(header + body + "\0" + lobbyId);
 			output.flush();
 		}
 		
