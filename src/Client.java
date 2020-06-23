@@ -1042,11 +1042,7 @@ public class Client extends JFrame {
 		PrintWriter output;       //writer for the output stream
 		boolean running = true;   //program status
 
-		GamePanel gamePanel;
-		
-		boolean enteredGame = false;
-		
-		public float[][] maze;
+		GamePanel gamePanel;	  // a reference to the gamePanel object
 		
 		public void go() {
 			
@@ -1066,19 +1062,22 @@ public class Client extends JFrame {
 			while(running){
 				try {
 					if (input.ready()) {
+						// parse the message received from the server
 						String msg = input.readLine();
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
-						//System.out.println(header);
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
+							// set the clientId to the Id that the server set
 							clientId = Integer.parseInt(body);
 						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
+							// set the lobbyId to the lobbyId that the server set
 							lobbyId = body;
 							showLobby(new ArrayList<String>());
 						} else if (Messages.compareHeaders(header, Messages.UPDATE_LOBBY)) {
+							// update the lobby when a new player joins. body is the name of the players in the game
 							updateLobby(parseNames(body));
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
-							System.out.println("got message");
+							// start the game where body is the string representation of the maze
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							int id = Integer.parseInt(body);
@@ -1093,6 +1092,7 @@ public class Client extends JFrame {
 							int id = Integer.parseInt(body);
 							gamePanel.movePlayerRight(id);
 						} else if (Messages.compareHeaders(header, Messages.END_GAME)) {
+							// shwo the leaderboard. body is a string representation of the scores
 							showLeaderboard(parseScores(body));
 						}
 						
@@ -1115,7 +1115,13 @@ public class Client extends JFrame {
 		}
 		
 		}
-		
+
+		/**
+		 * Send a message from the client to the server
+		 * @param header the header of the message chosen from Messages class
+		 * @param body the body of the message
+		 * @param lobbyId the lobbyId of the current game
+		 */
 		public void sendMsg(String header, String body, String lobbyId) {
 			output.println(header + body + "\0" + lobbyId);
 			output.flush();
@@ -1124,20 +1130,20 @@ public class Client extends JFrame {
 	}
 
 	/**
-	 * parseNames
-	 * description
-	 * @param names
-	 * @return ArrayList
+	 * parseNames parses the string representation of the names sent by the server in the body of UPDATE_LOBBY and JOIN_LOBBY
+	 * description parsing convention is based on the character "\t"
+	 * @param names the string representation
+	 * @return ArrayList the names in an ArrayList
 	 */
 	private static ArrayList<String> parseNames(String names) {
 		return new ArrayList<>(Arrays.asList(names.split("\t")));
 	}
 
 	/**
-	 * parseScores
-	 * description
-	 * @param scores
-	 * @return ArrayList
+	 * parseScores parses the string representation of the scores sent by the server in the body of END_GAME
+	 * description parsing convention is based on character "\t"
+	 * @param scores the string representation
+	 * @return ArrayList the scores in ArrayList
 	 */
 	private static ArrayList<String> parseScores(String scores) {
 		ArrayList<String> scoresArr = new ArrayList<>(Arrays.asList(scores.split("\t")));

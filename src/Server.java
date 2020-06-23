@@ -54,18 +54,19 @@ class Server {
 				e.printStackTrace();
 			}
 
-//			output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
-//			output.flush();
 			while (true) {
 				try {
 					String msg;
 					if ((msg = input.readLine()) != null) {
+						// parse the message sent from the client
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						String lobbyId = msg.split("\0")[2];
+
+						// if a user joins and there are enough players to start a game
 						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME - 1) {
 							clientCounter++;
-							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
+							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter); // send the user's id to the client
 							output.flush();
 							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
@@ -75,23 +76,23 @@ class Server {
 							lobby.playerSockets[clientCounter - 1] = this;
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
 							output.flush();
-							MazeGenerator mazeGenerator = new MazeGenerator();
-							String maze = parseMaze(mazeGenerator.maze);
-							System.out.println(maze);
-							clientCounter = 0;
+							MazeGenerator mazeGenerator = new MazeGenerator(); // generate a maze
+							String maze = MazeGenerator.parseMaze(mazeGenerator.maze); // parse the maze to be sent
+							System.out.println(maze); // send the maze to the client to be parsed by the client
+							clientCounter = 0; // reset the clientCounter
 
+							// add the player to the lobby and parse the names
 							lobby.names.add(body);
-							//lobby.times.put(body, null);
 							String namesStr = "";
 							for (String name : lobby.names) {
 								namesStr += name + "\t";
 							}
-							for (int i = 0; i < lobby.names.size(); i++) {
+							for (int i = 0; i < lobby.names.size(); i++) { // send everyone in the lobby the list of the players
 								lobby.playerSockets[i].output.println(Messages.UPDATE_LOBBY + namesStr);
 								lobby.playerSockets[i].output.flush();
 							}
 
-							// delay
+							// wait for 5s before starting the game
 							try {
 								Thread.sleep(5000);
 							} catch (Exception e) {
@@ -101,21 +102,25 @@ class Server {
 							}
 
 							lobby.startTimer();
-							for (int i = 0; i < lobby.playerSockets.length; i++) { // start game
+							for (int i = 0; i < lobby.playerSockets.length; i++) { // start the game
 								lobby.playerSockets[i].output.println(Messages.START_GAME + maze);
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < Lobby.PLAYERS_PER_GAME) {
+							// if a player joins, but there aren't enough players
 							clientCounter++;
-							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
+							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter); // send the user their id
 							output.flush();
-							if (clientCounter == 1) { // make a new lobby
+							if (clientCounter == 1) { // make a new lobby if it's the first player
 								lobbies.add(new Lobby());
 							}
+
+							// add the player info to the lobby
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
 							lobby.names.add(body);
-							//lobby.times.put(body, null);
+
+							//parse the maze and send them to the client
 							String namesStr = "";
 							for (String name : lobby.names) {
 								namesStr += name + "\t";
@@ -127,11 +132,12 @@ class Server {
 								lobby.playerSockets[i].output.flush();
 							}
 
-						} else if (Messages.compareHeaders(header, Messages.LEFT_LOBBY)) {
+						} else if (Messages.compareHeaders(header, Messages.LEFT_LOBBY)) { // if a player leaves the lobby
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							lobby.names.remove(Integer.parseInt(body) - 1);
 							clientCounter--;
 
+							// open a spot in the lobby for someone to join
 							ConnectionHandler[] newArr = new ConnectionHandler[Lobby.PLAYERS_PER_GAME];
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								if (i < Integer.parseInt(body) - 1) {
@@ -142,6 +148,7 @@ class Server {
 							}
 							lobby.playerSockets = newArr;
 
+							// update the names in the lobby
 							String namesStr = "";
 							for (String name : lobby.names) {
 								namesStr += name + "\t";
@@ -179,16 +186,16 @@ class Server {
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							lobby.points[Integer.parseInt(body) - 1] += 10;
 							System.out.println("Picked up item");
-						} else if (Messages.compareHeaders(header, Messages.FINISHED_MAZE)) {
+						} else if (Messages.compareHeaders(header, Messages.FINISHED_MAZE)) { // if someone finished the maze
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							lobby.hasCompleted[Integer.parseInt(body) - 1] = true;
-							lobby.endTimer(Integer.parseInt(body));
+							lobby.endTimer(Integer.parseInt(body)); // end the timer and calculate the sore
 							if (everyoneHasEnded(lobby.hasCompleted)) {
 								for (int i = 0; i < lobby.playerSockets.length; i++) {
-									lobby.playerSockets[i].output.println(Messages.END_GAME + lobby.parseScores());
+									lobby.playerSockets[i].output.println(Messages.END_GAME + lobby.parseScores()); // send the parses core
 									lobby.playerSockets[i].output.flush();
-									lobbies.remove(Integer.parseInt(lobbyId));
 								}
+								lobbies.remove(Integer.parseInt(lobbyId)); // remove the lobby, since no one will use it anymore
 							}
 
 						}
@@ -209,32 +216,17 @@ class Server {
 		}
 	}
 
+	/**
+	 * Checks if everyone in a lobby has finished the maze
+	 * @param hasCompleted an array of info about players
+	 * @return true if everyone has completed the maze, false else
+	 */
 	private static boolean everyoneHasEnded(boolean[] hasCompleted) {
 		for (int i = 0; i < hasCompleted.length; i++) {
 			if (!hasCompleted[i])
 				return false;
 		}
 		return true;
-	}
-
-	private static String parseMaze(float[][] maze) {
-
-		String str = "";
-
-		for (int i = 0; i < MazeGenerator.HEIGHT; i++) {
-			for (int j = 0; j < MazeGenerator.WIDTH; j++) {
-				if (maze[i][j] == 1.0f) {
-					str += "1";
-				} else if (maze[i][j] == 2.0f){
-					str += "2";
-				} else {
-					str += "0";
-				}
-			}
-			str +="l";
-		}
-
-		return str;
 	}
 
 }
