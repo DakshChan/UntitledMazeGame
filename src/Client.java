@@ -1045,8 +1045,8 @@ public class Client extends JFrame {
 	 * Connection with server
 	 */
 	class Connection {
-		//final String LOCAL_HOST = "daksh.asuscomm.com";
-		final String LOCAL_HOST = "127.0.0.1";
+		final String LOCAL_HOST = "daksh.asuscomm.com";
+		//final String LOCAL_HOST = "127.0.0.1";
 		final int PORT = 5000;
 		
 		Socket clientSocket;      //client socket for connection

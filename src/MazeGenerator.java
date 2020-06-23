@@ -7,8 +7,8 @@ import java.util.Random;
  */
 public class MazeGenerator {
 	// height and width of the maze to generate
-	final static int HEIGHT = 13;
-	final static int WIDTH = 13;
+	final static int HEIGHT = 21;
+	final static int WIDTH = 21;
 
 	// an enum of possible directions that the backtracking algorithm couol take could take
 	enum Directions {
