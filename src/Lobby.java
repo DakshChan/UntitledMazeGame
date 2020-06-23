@@ -45,10 +45,11 @@ public class Lobby {
 	 */
 	public String parseScores() {
 		String scores = "";
+		System.out.println(times.size());
 		for (Map.Entry<Long, String> entry : times.entrySet()) {
-			scores = entry.getValue() + ": " + entry.getKey() + "\t";
+			scores += entry.getValue() + ": " + entry.getKey() + "\t";
 		}
-
+		System.out.println("parsed score: " + scores);
 		return scores;
 	}
 

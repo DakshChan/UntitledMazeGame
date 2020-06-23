@@ -178,7 +178,6 @@ class Server {
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
-							System.out.println(body);
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								lobby.playerSockets[i].output.println(Messages.MOVED_RIGHT + body);
