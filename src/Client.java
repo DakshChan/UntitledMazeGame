@@ -1,4 +1,7 @@
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -463,6 +466,7 @@ public class Client extends JFrame {
 			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
+					itemPickUpAudio(id);
 					objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] = 0;
 				}
 				entityPos[id - 1][0] -= 1;
@@ -484,6 +488,7 @@ public class Client extends JFrame {
 			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
+					itemPickUpAudio(id);
 					objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] = 0;
 				}
 				entityPos[id - 1][0] += 1;
@@ -504,6 +509,7 @@ public class Client extends JFrame {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
+					itemPickUpAudio(id);
 					objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] = 0;
 				}
 				entityPos[id - 1][1] += 1;
@@ -524,6 +530,7 @@ public class Client extends JFrame {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
+					itemPickUpAudio(id);
 					objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] = 0;
 				}
 				entityPos[id - 1][1] -= 1;
@@ -543,14 +550,31 @@ public class Client extends JFrame {
 			return x == MazeGenerator.WIDTH - 3 && y == MazeGenerator.HEIGHT - 4;
 		}
 
+		private void itemPickUpAudio(int id) {
+			System.out.println("played audio");
+			if (id == clientId) {
+				try {
+					File file = new File("assets/ItemPickUp.wav");
+					Clip clip = AudioSystem.getClip();
+					AudioInputStream ais = AudioSystem.getAudioInputStream(file);
+					clip.open(ais);
+					clip.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 	}
 
 	class LobbyPanel extends JPanel implements MouseListener {
 		BufferedImage backdrop;
 		ArrayList<String> names;
+		boolean canGoBack;
 		
 		LobbyPanel(ArrayList<String> names) {
 			this.names = names;
+			canGoBack = true;
 			try {
 				backdrop = ImageIO.read(new File("assets/UMG - Lobby.png"));
 			} catch (IOException e) {
@@ -562,19 +586,16 @@ public class Client extends JFrame {
 
 		@Override
 		protected void paintComponent(Graphics g) {
+			System.out.println(canGoBack);
 			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
 			g.setColor(Color.WHITE);
-			g.setFont(new Font("Arial", Font.BOLD, (int) ((40/540.0) * this.getHeight())));
-			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getWidth()/2;
+			g.setFont(new Font("Arial", Font.BOLD, (int) ((40 / 540.0) * this.getHeight())));
+			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getWidth() / 2;
 			int offsetY = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getHeight();
-			g.fillRoundRect((int) (((150-10)/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((40/960.0) * this.getWidth()), (int) (((60)/540.0) * this.getHeight()),20,20);
-//			System.out.println((int) (((150-10)/960.0) * this.getWidth()) - offsetX);
-//			System.out.println((int) (((450)/540.0) * this.getHeight()) - offsetY);
-//			System.out.println(offsetX*2 + (int) ((40/960.0) * this.getWidth()));
-//			System.out.println( (int) (((60)/540.0) * this.getHeight()));
-			
-			g.setColor(Color.BLACK);
-			g.drawString("Back to Menu", (int) ((150/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()));
+			g.fillRoundRect((int) (((150 - 10) / 960.0) * this.getWidth()) - offsetX, (int) (((450) / 540.0) * this.getHeight()) - offsetY, offsetX * 2 + (int) ((40 / 960.0) * this.getWidth()), (int) (((60) / 540.0) * this.getHeight()), 20, 20);
+
+				g.setColor(Color.BLACK);
+				g.drawString("Back to Menu", (int) ((150 / 960.0) * this.getWidth()) - offsetX, (int) (((450) / 540.0) * this.getHeight()));
 			
 			for (int i = 0; i < names.size(); i++) {
 				g.setColor(Color.WHITE);
@@ -587,6 +608,7 @@ public class Client extends JFrame {
 			}
 
 			if (names.size() == Lobby.PLAYERS_PER_GAME) {
+				canGoBack = false;
 				g.setColor(Color.WHITE);
 				g.setFont(new Font("Arial", Font.BOLD, (int) ((30/540.0) * this.getHeight())));
 				g.drawString("Starting Game in 5 Seconds", 500, 410);
@@ -606,11 +628,13 @@ public class Client extends JFrame {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (e.getX() >= (10/960.0) * this.getWidth() && e.getX() <= (300/960.0) * this.getWidth()) {
-				if (e.getY() >= (380/540.0) * this.getHeight() && e.getY() <= (435/540.0) * this.getHeight()) {
-					connection.sendMsg(Messages.LEFT_LOBBY, Integer.toString(clientId), lobbyId);
-					
-					showMenu();
+			if (canGoBack) {
+				if (e.getX() >= (10 / 960.0) * this.getWidth() && e.getX() <= (300 / 960.0) * this.getWidth()) {
+					if (e.getY() >= (380 / 540.0) * this.getHeight() && e.getY() <= (435 / 540.0) * this.getHeight()) {
+						connection.sendMsg(Messages.LEFT_LOBBY, Integer.toString(clientId), lobbyId);
+
+						showMenu();
+					}
 				}
 			}
 		}
@@ -679,8 +703,6 @@ public class Client extends JFrame {
 		public void mouseReleased(MouseEvent e) {
 			if (e.getX() >= (10/960.0) * this.getWidth() && e.getX() <= (300/960.0) * this.getWidth()) {
 				if (e.getY() >= (380/540.0) * this.getHeight() && e.getY() <= (435/540.0) * this.getHeight()) {
-					connection.sendMsg(Messages.LEFT_LOBBY, Integer.toString(clientId), lobbyId);
-
 					showMenu();
 				}
 			}

@@ -187,6 +187,7 @@ class Server {
 								for (int i = 0; i < lobby.playerSockets.length; i++) {
 									lobby.playerSockets[i].output.println(Messages.END_GAME + lobby.parseScores());
 									lobby.playerSockets[i].output.flush();
+									lobbies.remove(Integer.parseInt(lobbyId));
 								}
 							}
 
