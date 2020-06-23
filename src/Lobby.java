@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Lobby {
 	// number of players per each game
-	public static final int PLAYERS_PER_GAME = 2;
+	public static final int PLAYERS_PER_GAME = 3;
 
 	public Server.ConnectionHandler[] playerSockets; // sockets of each player in the game
 	public ArrayList<String> names; // name of the player in the game
