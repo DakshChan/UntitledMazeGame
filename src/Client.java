@@ -515,12 +515,16 @@ public class Client extends JFrame {
 			
 			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis() && movementEnabled) {
 				if (code == 'w') {
+					movePlayerUp(clientId);
 					connection.sendMsg(Messages.MOVED_UP, Integer.toString(clientId), lobbyId);
 				} else if (code == 's') {
+					movePlayerDown(clientId);
 					connection.sendMsg(Messages.MOVED_DOWN, Integer.toString(clientId), lobbyId);
 				} else if (code == 'a') {
+					movePlayerLeft(clientId);
 					connection.sendMsg(Messages.MOVED_LEFT, Integer.toString(clientId), lobbyId);
 				} else if (code == 'd') {
+					movePlayerRight(clientId);
 					connection.sendMsg(Messages.MOVED_RIGHT, Integer.toString(clientId), lobbyId);
 				}
 			}
@@ -537,7 +541,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerLeft(int id) {
-			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
+			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1 && id != clientId) {
 				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -562,7 +566,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerRight(int id) {
-			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
+			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1 && id != clientId) {
 				if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -587,7 +591,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerDown(int id) {
-			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1 && id != clientId) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -612,7 +616,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerUp(int id) {
-			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1 && id != clientId) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -1034,7 +1038,7 @@ public class Client extends JFrame {
 	 * Connection with server
 	 */
 	class Connection {
-		final String LOCAL_HOST = "127.0.0.1";
+		final String LOCAL_HOST = "daksh.asuscomm.com";
 		final int PORT = 5000;
 		
 		Socket clientSocket;      //client socket for connection

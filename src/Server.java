@@ -4,7 +4,7 @@ import java.net.*;
 import java.util.ArrayList;
 
 class Server {
-	final String LOCAL_HOST = "127.0.0.1";
+	final String LOCAL_HOST = "daksh.asuscomm.com";
 	final int PORT = 5000;
 
 	ServerSocket serverSocket;//server socket for connection
