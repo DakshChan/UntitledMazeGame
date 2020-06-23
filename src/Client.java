@@ -541,7 +541,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerLeft(int id) {
-			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1 && id != clientId) {
+			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -566,7 +566,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerRight(int id) {
-			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1 && id != clientId) {
+			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -591,7 +591,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerDown(int id) {
-			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1 && id != clientId) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -616,7 +616,7 @@ public class Client extends JFrame {
 		 * @param id ID of player
 		 */
 		private void movePlayerUp(int id) {
-			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1 && id != clientId) {
+			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] == 2) {
 					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					itemPickUpAudio(id);
@@ -1085,18 +1085,22 @@ public class Client extends JFrame {
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							int id = Integer.parseInt(body);
-							gamePanel.movePlayerUp(id);
+							if (id != clientId)
+								gamePanel.movePlayerUp(id);
 						} else if (Messages.compareHeaders(header, Messages.MOVED_DOWN)) {
 							int id = Integer.parseInt(body);
-							gamePanel.movePlayerDown(id);
+							if (id != clientId)
+								gamePanel.movePlayerDown(id);
 						} else if (Messages.compareHeaders(header, Messages.MOVED_LEFT)) {
 							int id = Integer.parseInt(body);
-							gamePanel.movePlayerLeft(id);
+							if (id != clientId)
+								gamePanel.movePlayerLeft(id);
 						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
 							int id = Integer.parseInt(body);
-							gamePanel.movePlayerRight(id);
+							if (id != clientId)
+								gamePanel.movePlayerRight(id);
 						} else if (Messages.compareHeaders(header, Messages.END_GAME)) {
-							// shwo the leaderboard. body is a string representation of the scores
+							// show the leaderboard. body is a string representation of the scores
 							showLeaderboard(parseScores(body));
 						}
 						
