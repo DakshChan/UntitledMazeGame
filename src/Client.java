@@ -393,6 +393,11 @@ public class Client extends JFrame {
 				map2d.drawImage(temp, entityPos[i][0] * 32 + (int) (visibleTiles/2.0 * 32), entityPos[i][1] * 32 + (int) (visibleTiles/2.0 * 32),null);
 			}
 			
+			BufferedImage lightingMap = new BufferedImage(map.getWidth(), map.getHeight(), 2);
+			Graphics2D lighting2d = lightingMap.createGraphics();
+			lighting2d.setColor(Color.BLACK);
+			lighting2d.setBackground(new Color(0,0,0,0));
+			lighting2d.fillRect(0,0,map.getWidth(), map.getHeight());
 			
 			for (int x = 0; x < mapSizeX; x++) {
 				for (int y = 0; y < mapSizeY; y++) {
@@ -410,13 +415,14 @@ public class Client extends JFrame {
 						temp2d.drawImage(IMGNoise,0,0,null);
 						temp2d.dispose();
 						
-						map2d.drawImage(temp, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
-					} else {
-						map2d.setColor(new Color(0));
-						map2d.fillRect(x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), 32,32);
+						lighting2d.clearRect(x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), 32,32);
+						lighting2d.drawImage(temp, x * 32 + (int) (visibleTiles/2.0 * 32), y * 32 + (int) (visibleTiles/2.0 * 32), null);
 					}
 				}
 			}
+			lighting2d.dispose();
+			
+			map2d.drawImage(lightingMap, 0,0,map.getWidth(),map.getHeight(),null);
 			
 			//Gets rid of the 2d graphics
 			map2d.dispose();
