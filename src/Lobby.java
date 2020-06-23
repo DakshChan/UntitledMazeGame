@@ -46,7 +46,7 @@ public class Lobby {
 	public String parseScores() {
 		String scores = "";
 		for (Map.Entry<Long, String> entry : times.entrySet()) {
-			scores = entry.getValue() + ": " + entry.getKey();
+			scores = entry.getValue() + ": " + entry.getKey() + "\t";
 		}
 
 		return scores;
