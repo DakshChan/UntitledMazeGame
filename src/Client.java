@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class Client extends JFrame {
 
@@ -461,7 +462,7 @@ public class Client extends JFrame {
 		private void movePlayerLeft(int id) {
 			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
-					points += 100;
+					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] = 0;
 				}
 				entityPos[id - 1][0] -= 1;
@@ -482,7 +483,7 @@ public class Client extends JFrame {
 		private void movePlayerRight(int id) {
 			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] == 2) {
-					points += 100;
+					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] = 0;
 				}
 				entityPos[id - 1][0] += 1;
@@ -502,7 +503,7 @@ public class Client extends JFrame {
 		private void movePlayerDown(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
-					points += 100;
+					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] = 0;
 				}
 				entityPos[id - 1][1] += 1;
@@ -522,7 +523,7 @@ public class Client extends JFrame {
 		private void movePlayerUp(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] == 2) {
-					points += 100;
+					connection.sendMsg(Messages.PICKED_ITEM, Integer.toString(clientId), lobbyId);
 					objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] = 0;
 				}
 				entityPos[id - 1][1] -= 1;
@@ -564,8 +565,8 @@ public class Client extends JFrame {
 			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
 			g.setColor(Color.WHITE);
 			g.setFont(new Font("Arial", Font.BOLD, (int) ((40/540.0) * this.getHeight())));
-			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Lobby", g).getWidth()/2;
-			int offsetY = (int) g.getFontMetrics().getStringBounds("Back to Lobby", g).getHeight();
+			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getWidth()/2;
+			int offsetY = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getHeight();
 			g.fillRoundRect((int) (((150-10)/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((40/960.0) * this.getWidth()), (int) (((60)/540.0) * this.getHeight()),20,20);
 //			System.out.println((int) (((150-10)/960.0) * this.getWidth()) - offsetX);
 //			System.out.println((int) (((450)/540.0) * this.getHeight()) - offsetY);
@@ -573,7 +574,7 @@ public class Client extends JFrame {
 //			System.out.println( (int) (((60)/540.0) * this.getHeight()));
 			
 			g.setColor(Color.BLACK);
-			g.drawString("Back to Lobby", (int) ((150/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()));
+			g.drawString("Back to Menu", (int) ((150/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()));
 			
 			for (int i = 0; i < names.size(); i++) {
 				g.setColor(Color.WHITE);
@@ -609,6 +610,77 @@ public class Client extends JFrame {
 				if (e.getY() >= (380/540.0) * this.getHeight() && e.getY() <= (435/540.0) * this.getHeight()) {
 					connection.sendMsg(Messages.LEFT_LOBBY, Integer.toString(clientId), lobbyId);
 					
+					showMenu();
+				}
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+
+		}
+	}
+
+	class LeaderboardPanel extends JPanel implements MouseListener {
+		BufferedImage backdrop;
+		ArrayList<String> scores;
+
+		LeaderboardPanel(ArrayList<String> scores) {
+			this.scores = scores;
+			try {
+				backdrop = ImageIO.read(new File("assets/UMG - Leaderboard.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+				backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+			}
+			this.addMouseListener(this);
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
+			g.setColor(Color.WHITE);
+			g.setFont(new Font("Arial", Font.BOLD, (int) ((40/540.0) * this.getHeight())));
+			int offsetX = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getWidth()/2;
+			int offsetY = (int) g.getFontMetrics().getStringBounds("Back to Menu", g).getHeight();
+			g.fillRoundRect((int) (((150-10)/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((40/960.0) * this.getWidth()), (int) (((60)/540.0) * this.getHeight()),20,20);
+
+			g.setColor(Color.BLACK);
+			g.drawString("Back to Menu", (int) ((150/960.0) * this.getWidth()) - offsetX, (int) (((450)/540.0) * this.getHeight()));
+
+			for (int i = 0; i < scores.size(); i++) {
+				g.setColor(Color.WHITE);
+				g.setFont(new Font("Arial", Font.BOLD, (int) ((30/540.0) * this.getHeight())));
+				offsetX = (int) g.getFontMetrics().getStringBounds((i + 1) + ". " + scores.get(i), g).getWidth()/2;
+				offsetY = (int) g.getFontMetrics().getStringBounds((i + 1) + ". " + scores.get(i), g).getHeight()/2;
+				g.fillRoundRect((int) (((480-10)/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i-10)/540.0) * this.getHeight()) - offsetY, offsetX*2 + (int) ((20/960.0) * this.getWidth()), (int) (((30)/540.0) * this.getHeight()),10,10);
+				g.setColor(Color.BLACK);
+				g.drawString((i + 1) + ". " + scores.get(i), (int) ((480/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i)/540.0) * this.getHeight()));
+			}
+
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (e.getX() >= (10/960.0) * this.getWidth() && e.getX() <= (300/960.0) * this.getWidth()) {
+				if (e.getY() >= (380/540.0) * this.getHeight() && e.getY() <= (435/540.0) * this.getHeight()) {
+					connection.sendMsg(Messages.LEFT_LOBBY, Integer.toString(clientId), lobbyId);
+
 					showMenu();
 				}
 			}
@@ -714,6 +786,17 @@ public class Client extends JFrame {
 	void updateLobby(ArrayList<String> names) {
 		showLobby(names);
 	}
+
+	void showLeaderboard(ArrayList<String> scores) {
+		remove(currentPanel);
+		currentPanel = new LeaderboardPanel(scores);
+		add(currentPanel);
+		currentPanel.requestFocus();
+
+		revalidate();
+		repaint();
+
+	}
 	
 	void showMenu() {
 		remove(currentPanel);
@@ -785,7 +868,7 @@ public class Client extends JFrame {
 							int id = Integer.parseInt(body);
 							gamePanel.movePlayerRight(id);
 						} else if (Messages.compareHeaders(header, Messages.END_GAME)) {
-
+							showLeaderboard(parseScores(body));
 						}
 						
 					}
@@ -797,15 +880,14 @@ public class Client extends JFrame {
 					e.printStackTrace();
 				}
 			}
-			
-			//after completing the communication close all streams and sockets
-	/*	try {
+
+		try {
 			input.close();
 			output.close();
 			clientSocket.close();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println("Failed to close stream or/and socket.");
-		}*/
+		}
 		
 		}
 		
@@ -818,6 +900,12 @@ public class Client extends JFrame {
 
 	private static ArrayList<String> parseNames(String names) {
 		return new ArrayList<>(Arrays.asList(names.split("\t")));
+	}
+
+	private static ArrayList<String> parseScores(String scores) {
+		ArrayList<String> scoresArr = new ArrayList<>(Arrays.asList(scores.split("\t")));
+		Collections.reverse(scoresArr);
+		return scoresArr;
 	}
 
 	private static float[][] parseMaze(String maze) {

@@ -73,11 +73,6 @@ class Server {
 							// add the last player before starting the game
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
-							//lobby.names.add(body);
-							/*String namesStr = "\\";
-							for (String name : lobby.names) {
-								namesStr += name + "\\";
-							}*/
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
 							output.flush();
 							MazeGenerator mazeGenerator = new MazeGenerator();
@@ -86,6 +81,7 @@ class Server {
 							clientCounter = 0;
 
 							lobby.names.add(body);
+							//lobby.times.put(body, null);
 							String namesStr = "";
 							for (String name : lobby.names) {
 								namesStr += name + "\t";
@@ -104,9 +100,8 @@ class Server {
 								e.printStackTrace();
 							}
 
-
+							lobby.startTimer();
 							for (int i = 0; i < lobby.playerSockets.length; i++) { // start game
-
 								lobby.playerSockets[i].output.println(Messages.START_GAME + maze);
 								lobby.playerSockets[i].output.flush();
 							}
@@ -120,6 +115,7 @@ class Server {
 							Lobby lobby = lobbies.get(lobbies.size() - 1);
 							lobby.playerSockets[clientCounter - 1] = this;
 							lobby.names.add(body);
+							//lobby.times.put(body, null);
 							String namesStr = "";
 							for (String name : lobby.names) {
 								namesStr += name + "\t";
@@ -179,12 +175,17 @@ class Server {
 								lobby.playerSockets[i].output.println(Messages.MOVED_RIGHT + body);
 								lobby.playerSockets[i].output.flush();
 							}
+						} else if (Messages.compareHeaders(header, Messages.PICKED_ITEM)) {
+							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
+							lobby.points[Integer.parseInt(body) - 1] += 10;
+							System.out.println("Picked up item");
 						} else if (Messages.compareHeaders(header, Messages.FINISHED_MAZE)) {
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							lobby.hasCompleted[Integer.parseInt(body) - 1] = true;
+							lobby.endTimer(Integer.parseInt(body));
 							if (everyoneHasEnded(lobby.hasCompleted)) {
 								for (int i = 0; i < lobby.playerSockets.length; i++) {
-									lobby.playerSockets[i].output.println(Messages.END_GAME + "scores");
+									lobby.playerSockets[i].output.println(Messages.END_GAME + lobby.parseScores());
 									lobby.playerSockets[i].output.flush();
 								}
 							}
