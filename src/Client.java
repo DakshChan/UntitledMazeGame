@@ -1140,7 +1140,7 @@ public class Client extends JFrame {
 		 * @param body the body of the message
 		 * @param lobbyId the lobbyId of the current game
 		 */
-		public void sendMsg(String header, String body, String lobbyId) {
+		public synchronized void sendMsg(String header, String body, String lobbyId) {
 			output.println(header + body + "\0" + lobbyId);
 			output.flush();
 		}
