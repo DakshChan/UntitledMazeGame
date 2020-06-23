@@ -563,8 +563,8 @@ public class Client extends JFrame {
 			repaint();
 			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 			}
 		}
 
