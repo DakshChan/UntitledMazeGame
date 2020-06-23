@@ -3,8 +3,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class MazeGenerator {
-	final static int HEIGHT = 19;
-	final static int WIDTH = 19;
+	final static int HEIGHT = 31;
+	final static int WIDTH = 31;
 
 	enum Directions {
 		UP,

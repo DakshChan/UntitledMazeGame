@@ -2,7 +2,7 @@ import javax.swing.text.html.parser.Entity;
 import java.util.*;
 
 public class Lobby {
-	public static final int PLAYERS_PER_GAME = 2;
+	public static final int PLAYERS_PER_GAME = 3;
 
 	public Server.ConnectionHandler[] playerSockets;
 	public ArrayList<String> names;
