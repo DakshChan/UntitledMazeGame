@@ -525,6 +525,7 @@ public class Client extends JFrame {
 					connection.sendMsg(Messages.MOVED_LEFT, Integer.toString(clientId), lobbyId);
 				} else if (code == 'd') {
 					movePlayerRight(clientId);
+					System.out.println(movementEnabled);
 					connection.sendMsg(Messages.MOVED_RIGHT, Integer.toString(clientId), lobbyId);
 				}
 			}
@@ -1038,7 +1039,8 @@ public class Client extends JFrame {
 	 * Connection with server
 	 */
 	class Connection {
-		final String LOCAL_HOST = "daksh.asuscomm.com";
+		//final String LOCAL_HOST = "daksh.asuscomm.com";
+		final String LOCAL_HOST = "127.0.0.1";
 		final int PORT = 5000;
 		
 		Socket clientSocket;      //client socket for connection

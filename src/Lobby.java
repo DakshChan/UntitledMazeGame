@@ -1,15 +1,17 @@
+import com.sun.source.tree.Tree;
+
 import javax.swing.text.html.parser.Entity;
 import java.util.*;
 
 public class Lobby {
 	// number of players per each game
-	public static final int PLAYERS_PER_GAME = 3;
+	public static final int PLAYERS_PER_GAME = 2;
 
 	public Server.ConnectionHandler[] playerSockets; // sockets of each player in the game
 	public ArrayList<String> names; // name of the player in the game
 	public boolean[] hasCompleted; // an array that shows which players have finished the maze
 	public int[] points; // number of points each player has received
-	HashMap<String, Long> times; // a hashmap of player names and the time it took to finish the maze
+	TreeMap<Long, String> times; // a hashmap of player names and the time it took to finish the maze
 
 	private long startTime; // the time when the game starts
 
@@ -21,7 +23,7 @@ public class Lobby {
 		names = new ArrayList<>();
 		hasCompleted = new boolean[Lobby.PLAYERS_PER_GAME];
 		points = new int[Lobby.PLAYERS_PER_GAME];
-		times = new HashMap<>();
+		times = new TreeMap<>();
 	}
 
 	/**
@@ -37,7 +39,7 @@ public class Lobby {
 	 */
 	public void endTimer(int id) {
 		long time = System.nanoTime() - startTime;
-		times.put(names.get(id - 1),  1000000000000L / time + points[id - 1]);
+		times.put(1000000000000L / time + points[id - 1], names.get(id - 1));
 	}
 
 	/**
@@ -45,13 +47,11 @@ public class Lobby {
 	 * @return scores of type String ready to be sent to the client to be parsed back
 	 */
 	public String parseScores() {
-		HashMap sortedTimes = sortHashMap(times);
 		String scores = "";
-		Iterator iterator = sortedTimes.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry element = (Map.Entry)iterator.next();
-			scores += element.getKey() + ": " + element.getValue() + "\t";
+		for (Map.Entry<Long, String> entry : times.entrySet()) {
+			scores = entry.getValue() + ": " + entry.getKey();
 		}
+
 		return scores;
 	}
 
@@ -60,7 +60,7 @@ public class Lobby {
 	 * @param map the map to be sorted
 	 * @return result of type HashMap<String, Long> that is the sorted map.
 	 */
-	public static HashMap<String, Long> sortHashMap(HashMap<String, Long> map) {
+/*	public static HashMap<String, Long> sortHashMap(HashMap<String, Long> map) {
 		List<Map.Entry<String, Long>> list = new ArrayList<>(map.entrySet());
 		list.sort(Map.Entry.comparingByValue());
 
@@ -70,6 +70,6 @@ public class Lobby {
 		}
 
 		return result;
-	}
+	}*/
 
 }

@@ -4,7 +4,8 @@ import java.net.*;
 import java.util.ArrayList;
 
 class Server {
-	final String LOCAL_HOST = "daksh.asuscomm.com";
+	//final String LOCAL_HOST = "daksh.asuscomm.com";
+	final String LOCAL_HOST = "127.0.0.1";
 	final int PORT = 5000;
 
 	ServerSocket serverSocket;//server socket for connection
@@ -177,6 +178,7 @@ class Server {
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.MOVED_RIGHT)) {
+							System.out.println(body);
 							Lobby lobby = lobbies.get(Integer.parseInt(lobbyId));
 							for (int i = 0; i < lobby.playerSockets.length; i++) {
 								lobby.playerSockets[i].output.println(Messages.MOVED_RIGHT + body);
@@ -195,6 +197,7 @@ class Server {
 									lobby.playerSockets[i].output.println(Messages.END_GAME + lobby.parseScores()); // send the parses core
 									lobby.playerSockets[i].output.flush();
 								}
+								System.out.println("removed maze");
 								lobbies.remove(Integer.parseInt(lobbyId)); // remove the lobby, since no one will use it anymore
 							}
 
