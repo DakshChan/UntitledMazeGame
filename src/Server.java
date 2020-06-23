@@ -24,8 +24,8 @@ class Server {
 			serverSocket = new ServerSocket(PORT);          //create and bind a socket
 			while(true) {
 				Socket socket = serverSocket.accept();      //wait for connection request
-				clientCounter = clientCounter + 1;
-				System.out.println("Client "+clientCounter+" connected");
+				//clientCounter = clientCounter + 1;
+				//System.out.println("Client "+clientCounter+" connected");
 				Thread connectionThread = new Thread(new ConnectionHandler(socket));
 				connectionThread.start();                   //start a new thread to handle the connection
 			}
@@ -54,10 +54,8 @@ class Server {
 				e.printStackTrace();
 			}
 
-			output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
-			output.flush();                                 //flush the output stream to make sure the message
-			//was sent but not kept in the buffer (very important!)
-			//get a message from the client
+//			output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
+//			output.flush();
 			while (true) {
 				try {
 					String msg;
@@ -65,7 +63,10 @@ class Server {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						String lobbyId = msg.split("\0")[2];
-						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME) {
+						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME - 1) {
+							clientCounter++;
+							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
+							output.flush();
 							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
 							}
@@ -98,6 +99,8 @@ class Server {
 							try {
 								Thread.sleep(5000);
 							} catch (Exception e) {
+								output.close();
+								input.close();
 								e.printStackTrace();
 							}
 
@@ -108,6 +111,9 @@ class Server {
 								lobby.playerSockets[i].output.flush();
 							}
 						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < Lobby.PLAYERS_PER_GAME) {
+							clientCounter++;
+							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter);
+							output.flush();
 							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
 							}
@@ -188,6 +194,12 @@ class Server {
 				} catch (IOException e) {
 					System.out.println("Failed to receive message from the client.");
 					e.printStackTrace();
+					try {
+						input.close();
+						output.close();
+					} catch (IOException err) {
+						err.printStackTrace();
+					}
 					return;
 				}
 			}

@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 public class Messages {
 	public static final String CONNECTION_ESTABLISHED = "CONNECTION_ESTABLISHED\0";
 	public static final String SET_USERNAME = "USERNAME\0";

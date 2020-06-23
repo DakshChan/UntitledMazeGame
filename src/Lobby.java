@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Lobby {
-	public static final int PLAYERS_PER_GAME = 3;
+	public static final int PLAYERS_PER_GAME = 2;
 
 	public Server.ConnectionHandler[] playerSockets;
 	public ArrayList<String> names;

@@ -472,7 +472,7 @@ public class Client extends JFrame {
 
 			entityPos[id - 1][2] = 3;
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
 				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
@@ -492,7 +492,7 @@ public class Client extends JFrame {
 
 			entityPos[id - 1][2] = 1;
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
 				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
@@ -512,7 +512,7 @@ public class Client extends JFrame {
 			entityPos[id - 1][2] = 2;
 
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
 				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
@@ -531,7 +531,7 @@ public class Client extends JFrame {
 			}
 			entityPos[id - 1][2] = 0;
 			repaint();
-			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1])) {
+			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
 				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
@@ -770,6 +770,7 @@ public class Client extends JFrame {
 						} else if (Messages.compareHeaders(header, Messages.UPDATE_LOBBY)) {
 							updateLobby(parseNames(body));
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
+							System.out.println("got message");
 							startGame(parseMaze(body));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							int id = Integer.parseInt(body);
