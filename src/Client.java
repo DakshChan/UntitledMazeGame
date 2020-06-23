@@ -15,14 +15,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Client extends JFrame {
 
+/**
+ * Client program that connects to server and initiates maze game
+ */
+public class Client extends JFrame {
 	int points = 0;
 	int clientId;
 	JPanel currentPanel;
 	Connection connection;
 	String lobbyId;
 
+	/**
+	 * Constructs client class, initiates connection and JFrame
+	 */
 	Client() {
 		currentPanel = new MainMenuPanel();
 		this.add(currentPanel);
@@ -37,13 +43,26 @@ public class Client extends JFrame {
 		connection.go();
 	}
 
+	/**
+	 * Main method, creates new client object.
+	 */
 	public static void main(String[] args) {
 		Client player = new Client();
 	}
-	
+
+	/**
+	 * Main menu panel with splash screen and title.
+	 */
 	class MainMenuPanel extends JPanel implements MouseListener {
+
+		/**
+		 * Backdrop image
+		 */
 		BufferedImage menuImage;
-		
+
+		/**
+		 * Constructs the menu panel, stores image as backdrop. Adds mouse listener.
+		 */
 		MainMenuPanel() {
 			try {
 				menuImage = ImageIO.read(new File("assets/UMG - MainMenu.png"));
@@ -54,7 +73,11 @@ public class Client extends JFrame {
 			
 			this.addMouseListener(this);
 		}
-		
+
+		/**
+		 * paintComponent
+		 * @param g the graphics component
+		 */
 		@Override
 		protected void paintComponent(Graphics g) {
 			g.drawImage(menuImage, 0, 0, this.getWidth(), this.getHeight(), this);
@@ -69,7 +92,12 @@ public class Client extends JFrame {
 		public void mousePressed(MouseEvent e) {
 		
 		}
-		
+
+		/**
+		 * mouseReleased
+		 * Retrieves mosue coordinates and takes action based on box clicked
+		 * @param e mouse event
+		 */
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			//960 , 540
@@ -101,22 +129,41 @@ public class Client extends JFrame {
 		}
 	}
 
+	/**
+	 * Game panel with maze, player, game components.
+	 */
 	class GamePanel extends JPanel implements KeyListener {
+
+		/**
+		 * Horizontal and vertical map size
+		 */
 		private int mapSizeX;
 		private int mapSizeY;
 
+		/**
+		 *
+		 */
 		int[][] entityPos = new int[Lobby.PLAYERS_PER_GAME][3];
 
-		//int playerX;
-		//int playerY;
-		//int playerDir; //0 Up, 1 Right, 2 Down, 3 Left
-		
+		/**
+		 *
+		 */
 		int mapPosOffsetX;
 		int mapPosOffsetY;
 
+		/**
+		 *
+		 */
 		private int[][] objects;
+
+		/**
+		 *
+		 */
 		private int[][] lighting;
-		
+
+		/**
+		 * Image assets
+		 */
 		private BufferedImage IMGWallConnect;
 		private BufferedImage IMGWallNub;
 		private BufferedImage IMGWallStraight;
@@ -124,7 +171,6 @@ public class Client extends JFrame {
 		private BufferedImage IMGNoise;
 		private BufferedImage IMGPlayer;
 		private BufferedImage IMGOrb;
-		
 		private BufferedImage map;
 		
 		private long lastMoveTime;
@@ -134,6 +180,12 @@ public class Client extends JFrame {
 		final int moveTolerance = 2;
 		final int visibleTiles = 12;
 
+		/**
+		 * Construct game panel with objects and player spawn coordinates
+		 * @param objects 2D array of maze elements
+		 * @param playerSpawnX Spawn x coordinate
+		 * @param playerSpawnY Spawn y coordinate
+		 */
 		GamePanel(int[][] objects, int playerSpawnX, int playerSpawnY) {
 			
 			lastMoveTime = System.currentTimeMillis();
@@ -290,6 +342,11 @@ public class Client extends JFrame {
 			map2d.dispose();
 		}
 
+		/**
+		 * Paint component of game panel. Displays all objects
+		 * with lighting effects
+		 * @param g Graphics object
+		 */
 		@Override
 		protected void paintComponent(Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
@@ -389,7 +446,10 @@ public class Client extends JFrame {
 			}
 			g2.drawImage(croppedMap,(this.getWidth() - small) / 2,(this.getHeight() - small) / 2, small, small, null);
 		}
-		
+
+		/**
+		 * Updates lighting of player's surroundings
+		 */
 		private void updateLighting() {
 			for (int i = 0; i < mapSizeX; i++) {
 				for (int j = 0; j < mapSizeY; j++) {
@@ -399,6 +459,12 @@ public class Client extends JFrame {
 			recursiveUpdateLighting(entityPos[clientId - 1][0], entityPos[clientId - 1][1],5);
 		}
 
+		/**
+		 * Recursive method of rendering lighting effects
+		 * @param x
+		 * @param y
+		 * @param lightLevel
+		 */
 		private void recursiveUpdateLighting(int x, int y, int lightLevel) {
 			if (lightLevel == 0) {
 				return;
@@ -439,6 +505,10 @@ public class Client extends JFrame {
 		@Override
 		public void keyTyped(KeyEvent e) {}
 
+		/**
+		 * Key event for movement
+		 * @param e
+		 */
 		@Override
 		public void keyPressed(KeyEvent e) {
 			char code = e.getKeyChar();
@@ -462,6 +532,10 @@ public class Client extends JFrame {
 		@Override
 		public void keyReleased(KeyEvent e) {}
 
+		/**
+		 * Move player left
+		 * @param id ID of player
+		 */
 		private void movePlayerLeft(int id) {
 			if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] - 1][entityPos[id - 1][1]] == 2) {
@@ -474,7 +548,6 @@ public class Client extends JFrame {
 				lastMoveTime = System.currentTimeMillis();
 			}
 
-
 			entityPos[id - 1][2] = 3;
 			repaint();
 			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
@@ -484,6 +557,10 @@ public class Client extends JFrame {
 			}
 		}
 
+		/**
+		 * Move player right
+		 * @param id ID of player
+		 */
 		private void movePlayerRight(int id) {
 			if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] != 1) {
 				if (objects[entityPos[id - 1][0] + 1][entityPos[id - 1][1]] == 2) {
@@ -505,6 +582,10 @@ public class Client extends JFrame {
 			}
 		}
 
+		/**
+		 * Move player down
+		 * @param id ID of player
+		 */
 		private void movePlayerDown(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] + 1] == 2) {
@@ -526,6 +607,10 @@ public class Client extends JFrame {
 			}
 		}
 
+		/**
+		 * Move player up
+		 * @param id ID of player
+		 */
 		private void movePlayerUp(int id) {
 			if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] != 1) {
 				if (objects[entityPos[id - 1][0]][entityPos[id - 1][1] - 1] == 2) {
@@ -546,10 +631,20 @@ public class Client extends JFrame {
 			}
 		}
 
+		/**
+		 * Check if player's next mmove is the maze exit
+		 * @param x x position of the player
+		 * @param y y position of the player
+		 * @return boolean for maze completion
+		 */
 		private boolean checkEnd(int x, int y) {
 			return x == MazeGenerator.WIDTH - 3 && y == MazeGenerator.HEIGHT - 4;
 		}
 
+		/**
+		 * Play audio clip for item pickup
+		 * @param id ID of player
+		 */
 		private void itemPickUpAudio(int id) {
 			System.out.println("played audio");
 			if (id == clientId) {
@@ -567,11 +662,30 @@ public class Client extends JFrame {
 
 	}
 
+	/**
+	 * Lobby panel that displays all players within current lobby
+	 */
 	class LobbyPanel extends JPanel implements MouseListener {
+
+		/**
+		 * Image for backdrop
+		 */
 		BufferedImage backdrop;
+
+		/**
+		 * ArrayList of current player names
+		 */
 		ArrayList<String> names;
+
+		/**
+		 * Boolean for ability to return to main menu
+		 */
 		boolean canGoBack;
-		
+
+		/**
+		 * Constructs lobby panel with usernames
+		 * @param names ArrayList of current players' usernames
+		 */
 		LobbyPanel(ArrayList<String> names) {
 			this.names = names;
 			canGoBack = true;
@@ -584,6 +698,10 @@ public class Client extends JFrame {
 			this.addMouseListener(this);
 		}
 
+		/**
+		 * Paint component of lobby panel
+		 * @param g Graphics object
+		 */
 		@Override
 		protected void paintComponent(Graphics g) {
 			System.out.println(canGoBack);
@@ -626,6 +744,11 @@ public class Client extends JFrame {
 
 		}
 
+		/**
+		 * Mouse event for returning to main menu only if back button is allowed,
+		 * only when game has not started
+		 * @param e Mouse event
+		 */
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (canGoBack) {
@@ -650,10 +773,25 @@ public class Client extends JFrame {
 		}
 	}
 
+	/**
+	 * Leaderboard panel that displays leaderboard
+	 */
 	class LeaderboardPanel extends JPanel implements MouseListener {
+
+		/**
+		 * Backdrop image
+		 */
 		BufferedImage backdrop;
+
+		/**
+		 * Scores of all players
+		 */
 		ArrayList<String> scores;
 
+		/**
+		 * Constructs panel with player scores
+		 * @param scores ArrayList of scores
+		 */
 		LeaderboardPanel(ArrayList<String> scores) {
 			this.scores = scores;
 			try {
@@ -665,6 +803,10 @@ public class Client extends JFrame {
 			this.addMouseListener(this);
 		}
 
+		/**
+		 * Paint component of leaderboard panel
+		 * @param g Graphics object
+		 */
 		@Override
 		protected void paintComponent(Graphics g) {
 			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
@@ -699,6 +841,10 @@ public class Client extends JFrame {
 
 		}
 
+		/**
+		 * Mouse event for going back to menu
+		 * @param e Mouse Event
+		 */
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			if (e.getX() >= (10/960.0) * this.getWidth() && e.getX() <= (300/960.0) * this.getWidth()) {
@@ -719,63 +865,94 @@ public class Client extends JFrame {
 		}
 	}
 
+	/**
+	 * Instruction panel with guide to game mechanics, goal and controls
+	 */
 	class InstructionPanel extends JPanel implements MouseListener {
-	BufferedImage backdrop;
-	
-	InstructionPanel() {
-		try {
-			backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
-		}
-		this.addMouseListener(this);
-	}
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
-		
-	}
-	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e) {
-	
-	}
-	
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		//960 , 540
-		if (e.getX() >= (340/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
-			if (e.getY() >= (420/540.0) * this.getHeight() && e.getY() <= (480/540.0) * this.getHeight()) {
-				showMenu();
+
+		/**
+		 * Back drop image
+		 */
+		BufferedImage backdrop;
+
+		/**
+		 * Constructs instruction panel
+		 */
+		InstructionPanel() {
+			try {
+				backdrop = ImageIO.read(new File("assets/UMG - Instructions.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+				backdrop = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
 			}
+			this.addMouseListener(this);
 		}
+
+		/**
+		 * Paint component of instruction panel
+		 * @param g Graphics object
+		 */
+		@Override
+		protected void paintComponent(Graphics g) {
+			g.drawImage(backdrop, 0, 0, this.getWidth(), this.getHeight(), this);
+
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+		}
+
+		/**
+		 * Mouse event checker for returning to menu
+		 * @param e Mouse Event
+		 */
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			//960 , 540
+			if (e.getX() >= (340/960.0) * this.getWidth() && e.getX() <= (620/960.0) * this.getWidth()) {
+				if (e.getY() >= (420/540.0) * this.getHeight() && e.getY() <= (480/540.0) * this.getHeight()) {
+					showMenu();
+				}
+			}
 	}
 	
 	
 	
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	
-	}
-	
-	@Override
-	public void mouseExited(MouseEvent e) {
-	
-	}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+
+		}
 }
-	
-	//This method should take in some variables
+
+	/**
+	 * startGame
+	 * Begins the game with a maze and game panel
+	 * @param maze Float array of values for maze elements
+	 */
 	void startGame(float[][] maze) {
+
+		/**
+		 * Maze generator
+		 */
 		MazeGenerator g = new MazeGenerator(maze);
+
+		/**
+		 * 2D array of walls
+		 */
 		int[][] walls = g.getMaze();
-		
+
+		// Remove current panel and intiate game panel
 		remove(currentPanel);
 		currentPanel = new GamePanel(walls, 1, 1);
 		add(currentPanel);
@@ -785,6 +962,10 @@ public class Client extends JFrame {
 		repaint();
 	}
 
+	/**
+	 * showInstructions
+	 * Shows the instructions page
+	 */
 	void showInstructions() {
 		remove(currentPanel);
 		currentPanel = new InstructionPanel();
@@ -795,6 +976,10 @@ public class Client extends JFrame {
 		repaint();
 	}
 
+	/**
+	 * showLobby
+	 * Shows the lobby panel with current players
+	 */
 	void showLobby(ArrayList<String> names) {
 		remove(currentPanel);
 		currentPanel = new LobbyPanel(names);
@@ -805,10 +990,21 @@ public class Client extends JFrame {
 		repaint();
 	}
 
+
+	/**
+	 * updateLobby
+	 * Updates the lobby with a new list of players
+	 * @param names ArrayList of player names
+	 */
 	void updateLobby(ArrayList<String> names) {
 		showLobby(names);
 	}
 
+	/**
+	 * showLeaderboard
+	 * Shows leaderboard panel
+	 * @param scores ArrayList of scores
+	 */
 	void showLeaderboard(ArrayList<String> scores) {
 		remove(currentPanel);
 		currentPanel = new LeaderboardPanel(scores);
@@ -819,7 +1015,11 @@ public class Client extends JFrame {
 		repaint();
 
 	}
-	
+
+	/**
+	 * showMenu
+	 * Shows main menu panel
+	 */
 	void showMenu() {
 		remove(currentPanel);
 		currentPanel = new MainMenuPanel();
@@ -829,7 +1029,10 @@ public class Client extends JFrame {
 		revalidate();
 		repaint();
 	}
-	
+
+	/**
+	 * Connection with server
+	 */
 	class Connection {
 		final String LOCAL_HOST = "127.0.0.1";
 		final int PORT = 5000;
@@ -920,16 +1123,35 @@ public class Client extends JFrame {
 		
 	}
 
+	/**
+	 * parseNames
+	 * description
+	 * @param names
+	 * @return ArrayList
+	 */
 	private static ArrayList<String> parseNames(String names) {
 		return new ArrayList<>(Arrays.asList(names.split("\t")));
 	}
 
+	/**
+	 * parseScores
+	 * description
+	 * @param scores
+	 * @return ArrayList
+	 */
 	private static ArrayList<String> parseScores(String scores) {
 		ArrayList<String> scoresArr = new ArrayList<>(Arrays.asList(scores.split("\t")));
 		Collections.reverse(scoresArr);
 		return scoresArr;
 	}
 
+	/**
+	 * parseMaze
+	 * Parses the server-generated string into a 2D float array, with
+	 * values representing maze elements
+	 * @param maze Server-provided string of maze layout
+	 * @return float[][] 2D array of maze elements
+	 */
 	private static float[][] parseMaze(String maze) {
 
 		int row = 0;
