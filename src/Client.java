@@ -1162,8 +1162,12 @@ public class Client extends JFrame {
 	 * @return ArrayList the scores in ArrayList
 	 */
 	private static ArrayList<String> parseScores(String scores) {
+		System.out.println(scores);
 		ArrayList<String> scoresArr = new ArrayList<>(Arrays.asList(scores.split("\t")));
 		Collections.reverse(scoresArr);
+		for (String scr : scoresArr) {
+			System.out.println(scr);
+		}
 		return scoresArr;
 	}
 
