@@ -521,18 +521,20 @@ public class Client extends JFrame {
 			
 			if (lastMoveTime + moveDelayMillis < System.currentTimeMillis() && movementEnabled) {
 				if (code == 'w') {
-					movePlayerUp(clientId);
 					connection.sendMsg(Messages.MOVED_UP, Integer.toString(clientId), lobbyId);
+					movePlayerUp(clientId);
+					
 				} else if (code == 's') {
-					movePlayerDown(clientId);
 					connection.sendMsg(Messages.MOVED_DOWN, Integer.toString(clientId), lobbyId);
+					movePlayerDown(clientId);
+					
 				} else if (code == 'a') {
-					movePlayerLeft(clientId);
 					connection.sendMsg(Messages.MOVED_LEFT, Integer.toString(clientId), lobbyId);
+					movePlayerLeft(clientId);
+					
 				} else if (code == 'd') {
-					movePlayerRight(clientId);
-					System.out.println(movementEnabled);
 					connection.sendMsg(Messages.MOVED_RIGHT, Integer.toString(clientId), lobbyId);
+					movePlayerRight(clientId);
 				}
 			}
 
@@ -613,8 +615,8 @@ public class Client extends JFrame {
 			repaint();
 			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 			}
 		}
 
@@ -637,8 +639,8 @@ public class Client extends JFrame {
 			repaint();
 			if (checkEnd(entityPos[id - 1][0], entityPos[id - 1][1]) && id == clientId) {
 				movementEnabled = false;
-				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 				JOptionPane.showMessageDialog(this, "Waiting for others to finish the maze.");
+				connection.sendMsg(Messages.FINISHED_MAZE, Integer.toString(id), lobbyId);
 			}
 		}
 
