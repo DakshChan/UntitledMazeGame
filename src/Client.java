@@ -176,8 +176,8 @@ public class Client extends JFrame {
 		private long lastMoveTime;
 		private boolean movementEnabled;
 
-		final int moveDelayMillis = 100;
-		final int moveTolerance = 2;
+		final int moveDelayMillis = 150;
+		final int moveTolerance = 4;
 		final int visibleTiles = 12;
 
 		/**
