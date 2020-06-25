@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +21,10 @@ import java.util.Collections;
  * Client program that connects to server and initiates maze game
  */
 public class Client extends JFrame {
-	int points = 0;
 	int clientId;
+	int playersPerGame;
+	int mazeHeight;
+	int mazeWidth;
 	JPanel currentPanel;
 	Connection connection;
 	String lobbyId;
@@ -106,6 +109,7 @@ public class Client extends JFrame {
 					//PLAY
 
 					String username = JOptionPane.showInputDialog(this, "Enter Username:");
+					System.out.println("sent username");
 					connection.sendMsg(Messages.SET_USERNAME, username, lobbyId);
 
 					//startGame(connection.maze);
@@ -143,7 +147,7 @@ public class Client extends JFrame {
 		/**
 		 *
 		 */
-		int[][] entityPos = new int[Lobby.PLAYERS_PER_GAME][3];
+		int[][] entityPos = new int[playersPerGame][3];
 
 		/**
 		 *
@@ -214,7 +218,7 @@ public class Client extends JFrame {
 			mapPosOffsetX = playerSpawnX;
 			mapPosOffsetY = playerSpawnY;
 
-			for (int i = 0; i < Lobby.PLAYERS_PER_GAME; i++) {
+			for (int i = 0; i < playersPerGame; i++) {
 				entityPos[i][0] = playerSpawnX;
 				entityPos[i][1] = playerSpawnY;
 				entityPos[i][1] = 1;
@@ -372,7 +376,7 @@ public class Client extends JFrame {
 			
 			//Renders player onto Map
 
-			for (int i = 0; i < Lobby.PLAYERS_PER_GAME; i++) {
+			for (int i = 0; i < playersPerGame; i++) {
 				BufferedImage temp = new BufferedImage(32,32,2);
 				
 				Graphics2D temp2d = temp.createGraphics();
@@ -651,7 +655,7 @@ public class Client extends JFrame {
 		 * @return boolean for maze completion
 		 */
 		private boolean checkEnd(int x, int y) {
-			return x == MazeGenerator.WIDTH - 3 && y == MazeGenerator.HEIGHT - 4;
+			return x == mazeWidth - 3 && y == mazeHeight - 4;
 		}
 
 		/**
@@ -738,7 +742,7 @@ public class Client extends JFrame {
 				g.drawString(names.get(i), (int) ((480/960.0) * this.getWidth()) - offsetX, (int) (((200+50*i)/540.0) * this.getHeight()));
 			}
 
-			if (names.size() == Lobby.PLAYERS_PER_GAME) {
+			if (names.size() == playersPerGame) {
 				canGoBack = false;
 				g.setColor(Color.WHITE);
 				g.setFont(new Font("Arial", Font.BOLD, (int) ((30/540.0) * this.getHeight())));
@@ -1047,8 +1051,8 @@ public class Client extends JFrame {
 	 * Connection with server
 	 */
 	class Connection {
-		final String LOCAL_HOST = "daksh.asuscomm.com";
-		//final String LOCAL_HOST = "127.0.0.1";
+		//final String LOCAL_HOST = "daksh.asuscomm.com";
+		final String LOCAL_HOST = "127.0.0.1";
 		final int PORT = 5000;
 		
 		Socket clientSocket;      //client socket for connection
@@ -1081,8 +1085,11 @@ public class Client extends JFrame {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
-							// set the clientId to the Id that the server set
-							clientId = Integer.parseInt(body);
+							ArrayList<Integer> configs = parseConfig(body);
+							clientId = configs.get(0);
+							playersPerGame = configs.get(1);
+							mazeHeight = configs.get(2);
+							mazeWidth = configs.get(3);
 						} else if (Messages.compareHeaders(header, Messages.JOIN_LOBBY)) {
 							// set the lobbyId to the lobbyId that the server set
 							lobbyId = body;
@@ -1092,7 +1099,7 @@ public class Client extends JFrame {
 							updateLobby(parseNames(body));
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							// start the game where body is the string representation of the maze
-							startGame(parseMaze(body));
+							startGame(parseMaze(body, mazeHeight, mazeWidth));
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							int id = Integer.parseInt(body);
 							if (id != clientId)
@@ -1147,6 +1154,18 @@ public class Client extends JFrame {
 		
 	}
 
+	private static ArrayList<Integer> parseConfig(String config) {
+		ArrayList<Integer> configArr = new ArrayList<>();
+		String[] configs = config.split("\t");
+
+		configArr.add(Integer.parseInt(configs[0])); // client id
+		configArr.add(Integer.parseInt(configs[1])); // players_per_game
+		configArr.add(Integer.parseInt(configs[2])); // height
+		configArr.add(Integer.parseInt(configs[3])); // width
+
+		return configArr;
+	}
+
 	/**
 	 * parseNames parses the string representation of the names sent by the server in the body of UPDATE_LOBBY and JOIN_LOBBY
 	 * description parsing convention is based on the character "\t"
@@ -1180,12 +1199,12 @@ public class Client extends JFrame {
 	 * @param maze Server-provided string of maze layout
 	 * @return float[][] 2D array of maze elements
 	 */
-	private static float[][] parseMaze(String maze) {
+	private static float[][] parseMaze(String maze, int height, int width) {
 
 		int row = 0;
 		int column = 0;
 
-		float[][] arr = new float[MazeGenerator.HEIGHT][MazeGenerator.WIDTH];
+		float[][] arr = new float[height][width];
 
 		for (int i = 0; i < maze.length(); i++) {
 			char cell = maze.charAt(i);

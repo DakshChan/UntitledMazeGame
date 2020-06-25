@@ -4,8 +4,8 @@ import java.net.*;
 import java.util.ArrayList;
 
 class Server {
-	final String LOCAL_HOST = "daksh.asuscomm.com";
-	//final String LOCAL_HOST = "127.0.0.1";
+	//final String LOCAL_HOST = "daksh.asuscomm.com";
+	final String LOCAL_HOST = "127.0.0.1";
 	final int PORT = 5000;
 
 	ServerSocket serverSocket;//server socket for connection
@@ -13,6 +13,7 @@ class Server {
 	ArrayList<Lobby> lobbies;
 
 	public static void main(String[] args) {
+		configLoader.parseConfig();
 		Server server = new Server();
 		server.go();
 	}
@@ -23,13 +24,9 @@ class Server {
 		System.out.println("Waiting for a connection request from a client ...");
 		try {
 			serverSocket = new ServerSocket(PORT);          //create and bind a socket
-			while(true) {
-				Socket socket = serverSocket.accept();      //wait for connection request
-				//clientCounter = clientCounter + 1;
-				//System.out.println("Client "+clientCounter+" connected");
-				Thread connectionThread = new Thread(new ConnectionHandler(socket));
-				connectionThread.start();                   //start a new thread to handle the connection
-			}
+			Socket socket = serverSocket.accept();      //wait for connection request
+			Thread connectionThread = new Thread(new ConnectionHandler(socket));
+			connectionThread.start();                   //start a new thread to handle the connection
 		} catch(Exception e) {
 			System.out.println("Error accepting connection");
 			e.printStackTrace();
@@ -126,6 +123,7 @@ class Server {
 							for (String name : lobby.names) {
 								namesStr += name + "\t";
 							}
+							System.out.println("joining lobby??!");
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
 
 							for (int i = 0; i < lobby.names.size(); i++) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <players_per_game>1</players_per_game>
+
+    <maze>
+        <height>19</height>
+        <width>19</width>
+    </maze>
+</config>

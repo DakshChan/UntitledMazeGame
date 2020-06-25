@@ -1,8 +1,12 @@
 import java.util.*;
 
+import org.w3c.dom.*;
+import javax.xml.parsers.*;
+import java.io.*;
+
 public class Lobby {
 	// number of players per each game
-	public static final int PLAYERS_PER_GAME = 3;
+	public static final int PLAYERS_PER_GAME = configLoader.players_per_game;
 
 	public Server.ConnectionHandler[] playerSockets; // sockets of each player in the game
 	public ArrayList<String> names; // name of the player in the game
@@ -16,6 +20,7 @@ public class Lobby {
 	 * Constructor that initilizes all the varialbes with the correct size based on PLAYERS_PER_GAME
 	 */
 	Lobby() {
+		System.out.println(PLAYERS_PER_GAME);
 		playerSockets = new Server.ConnectionHandler[Lobby.PLAYERS_PER_GAME];
 		names = new ArrayList<>();
 		hasCompleted = new boolean[Lobby.PLAYERS_PER_GAME];
