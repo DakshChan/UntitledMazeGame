@@ -1,5 +1,6 @@
 # Untitled Maze Game
 <!--[![forthebadge](https://forthebadge.com/images/badges/made-with-java.svg)](https://forthebadge.com)-->
+[![Build Status](https://travis-ci.org/DakshChan/UntitledMazeGame.svg?branch=master)](https://travis-ci.org/DakshChan/UntitledMazeGame)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-no-red.svg)](https://bitbucket.org/lbesson/ansi-colors)
 [![GitHub contributors](https://img.shields.io/github/contributors/DakshChan/UntitledMazeGame.svg)](https://github.com/DakshChan/UntitledMazeGame/graphs/contributors/)
 
