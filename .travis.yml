@@ -6,3 +6,6 @@ os:
 
 jdk:
   - oraclejdk11
+
+notifications:
+  email: false
