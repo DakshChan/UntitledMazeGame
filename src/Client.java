@@ -1052,7 +1052,7 @@ public class Client extends JFrame {
 	 */
 	class Connection {
 		//final String LOCAL_HOST = "daksh.asuscomm.com";
-		final String LOCAL_HOST = "127.0.0.1";
+		final String HOST = "127.0.0.1";
 		final int PORT = 5000;
 		
 		Socket clientSocket;      //client socket for connection
@@ -1067,7 +1067,7 @@ public class Client extends JFrame {
 			//create a socket (try-catch required) and attempt a connection to the local IP address
 			System.out.println("Attempting to establish a connection ...");
 			try {
-				clientSocket = new Socket(LOCAL_HOST, PORT);    //create and bind a socket, and request connection
+				clientSocket = new Socket(HOST, PORT);    //create and bind a socket, and request connection
 				InputStreamReader stream= new InputStreamReader(clientSocket.getInputStream());
 				input = new BufferedReader(stream);
 				output = new PrintWriter(clientSocket.getOutputStream());
