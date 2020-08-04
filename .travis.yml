@@ -6,8 +6,5 @@ os:
 jdk:
   - oraclejdk11
 
-script:
-  - javac Server.java && javac Client.java
-
 notifications:
   email: false
