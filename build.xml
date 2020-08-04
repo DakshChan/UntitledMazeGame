@@ -1,5 +1,5 @@
-<project name="Untitled Maze Game" default="compile">
-    <target name="compile">
+<project name="Untitled Maze Game" default="test">
+    <target name="test">
         <mkdir dir="bin"/>
         <javac srcdir="src" destdir="bin"/>
     </target>
