@@ -2,13 +2,12 @@ language: java
 
 os:
   - linux
-  - windows
 
 jdk:
   - oraclejdk11
 
 script:
-  - javac
+  - javac Server.java && javac Client.java
 
 notifications:
   email: false
