@@ -957,12 +957,12 @@ public class Client extends JFrame {
 	 * Begins the game with a maze and game panel
 	 * @param maze Float array of values for maze elements
 	 */
-	void startGame(float[][] maze) {
+	void startGame(float[][] maze, int height, int width) {
 
 		/**
 		 * Maze generator
 		 */
-		MazeGenerator g = new MazeGenerator(maze);
+		MazeGenerator g = new MazeGenerator(maze, height, width);
 
 		/**
 		 * 2D array of walls
@@ -1084,6 +1084,8 @@ public class Client extends JFrame {
 						String msg = input.readLine();
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
+						System.out.println("h"+header);
+						System.out.println("b"+body);
 						if (Messages.compareHeaders(header, Messages.CONNECTION_ESTABLISHED)) {
 							ArrayList<Integer> configs = parseConfig(body);
 							clientId = configs.get(0);
@@ -1099,7 +1101,7 @@ public class Client extends JFrame {
 							updateLobby(parseNames(body));
 						} else if (Messages.compareHeaders(header, Messages.START_GAME)) {
 							// start the game where body is the string representation of the maze
-							startGame(parseMaze(body, mazeHeight, mazeWidth));
+							startGame(parseMaze(body, mazeHeight, mazeWidth),mazeHeight,mazeWidth);
 						} else if (Messages.compareHeaders(header, Messages.MOVED_UP)) {
 							int id = Integer.parseInt(body);
 							if (id != clientId)
@@ -1156,6 +1158,7 @@ public class Client extends JFrame {
 
 	private static ArrayList<Integer> parseConfig(String config) {
 		ArrayList<Integer> configArr = new ArrayList<>();
+		System.out.println(config);
 		String[] configs = config.split("\t");
 
 		configArr.add(Integer.parseInt(configs[0])); // client id

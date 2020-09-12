@@ -60,11 +60,15 @@ class Server {
 						String header = msg.split("\0")[0];
 						String body = msg.split("\0")[1];
 						String lobbyId = msg.split("\0")[2];
-
+						System.out.println("h" + header);
+						System.out.println("b"+body);
+						System.out.println("l"+lobbyId);
 						// if a user joins and there are enough players to start a game
 						if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter == Lobby.PLAYERS_PER_GAME - 1) {
+							System.out.println("start");
 							clientCounter++;
-							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter); // send the user's id to the client
+							String configStr = clientCounter+"\t"+configLoader.players_per_game+"\t"+configLoader.height+"\t"+configLoader.width;
+							output.println(Messages.CONNECTION_ESTABLISHED + configStr); // send the user's id to the client
 							output.flush();
 							if (clientCounter == 1) { // make a new lobby
 								lobbies.add(new Lobby());
@@ -74,7 +78,7 @@ class Server {
 							lobby.playerSockets[clientCounter - 1] = this;
 							output.println(Messages.JOIN_LOBBY + (lobbies.size() - 1));
 							output.flush();
-							MazeGenerator mazeGenerator = new MazeGenerator(); // generate a maze
+							MazeGenerator mazeGenerator = new MazeGenerator(configLoader.height, configLoader.width); // generate a maze
 							String maze = MazeGenerator.parseMaze(mazeGenerator.maze); // parse the maze to be sent
 							System.out.println(maze); // send the maze to the client to be parsed by the client
 							clientCounter = 0; // reset the clientCounter
@@ -107,7 +111,8 @@ class Server {
 						} else if (Messages.compareHeaders(header, Messages.SET_USERNAME) && clientCounter < Lobby.PLAYERS_PER_GAME) {
 							// if a player joins, but there aren't enough players
 							clientCounter++;
-							output.println(Messages.CONNECTION_ESTABLISHED + clientCounter); // send the user their id
+							String configStr = clientCounter+"\t"+configLoader.players_per_game+"\t"+configLoader.height+"\t"+configLoader.width;
+							output.println(Messages.CONNECTION_ESTABLISHED + configStr); // send the user's id to the client
 							output.flush();
 							if (clientCounter == 1) { // make a new lobby if it's the first player
 								lobbies.add(new Lobby());
