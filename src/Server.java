@@ -4,8 +4,6 @@ import java.net.*;
 import java.util.ArrayList;
 
 class Server {
-	//final String LOCAL_HOST = "daksh.asuscomm.com";
-	final String HOST = "127.0.0.1";
 	final int PORT = 5000;
 
 	ServerSocket serverSocket;//server socket for connection
@@ -20,16 +18,25 @@ class Server {
 
 	public void go() {
 		lobbies = new ArrayList<>();
+		
 		//create a socket with the local IP address (try-catch required) and wait for connection request
-		System.out.println("Waiting for a connection request from a client ...");
 		try {
-			serverSocket = new ServerSocket(PORT);          //create and bind a socket
-			Socket socket = serverSocket.accept();      //wait for connection request
-			Thread connectionThread = new Thread(new ConnectionHandler(socket));
-			connectionThread.start();                   //start a new thread to handle the connection
-		} catch(Exception e) {
-			System.out.println("Error accepting connection");
-			e.printStackTrace();
+			serverSocket = new ServerSocket(PORT); //create and bind a socket
+		} catch (Exception e) {
+			System.out.println("Port could not be bound");
+			return;
+		}
+		
+		while (true) {
+			try {
+				System.out.println("Waiting for a connection request from a client ...");
+				Socket socket = serverSocket.accept();      //wait for connection request
+				ConnectionHandler connectionThread = new ConnectionHandler(socket);
+				connectionThread.start();                   //start a new thread to handle the connection
+			} catch (Exception e) {
+				System.out.println("Error accepting connection");
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -55,6 +62,8 @@ class Server {
 			while (true) {
 				try {
 					String msg;
+					System.out.println(clientCounter);
+					System.out.println(socket);
 					if ((msg = input.readLine()) != null) {
 						// parse the message sent from the client
 						String header = msg.split("\0")[0];
